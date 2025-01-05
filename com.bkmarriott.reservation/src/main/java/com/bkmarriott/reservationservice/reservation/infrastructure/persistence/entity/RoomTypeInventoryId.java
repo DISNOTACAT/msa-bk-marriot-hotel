@@ -36,7 +36,7 @@ public class RoomTypeInventoryId implements Serializable {
     this.roomType = roomType;
   }
 
-  public static RoomTypeInventoryId from(Long hotelId, LocalDate date, RoomType roomType) {
+  public static RoomTypeInventoryId of(Long hotelId, LocalDate date, RoomType roomType) {
     return RoomTypeInventoryId.builder()
         .hotelId(hotelId)
         .date(date)
