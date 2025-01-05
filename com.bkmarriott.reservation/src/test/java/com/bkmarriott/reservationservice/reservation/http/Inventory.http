@@ -1,0 +1,13 @@
+### 인벤토리 예약 객실 수 증가
+PATCH http://localhost:19000/api/v1/reservation/inventory?reservationId=1
+Content-Type: application/json
+
+### 검색 기간의 가능한 객실 수 조회 (여유분 10% 반영, 0개 값 조회 포함)
+GET http://localhost:19000/api/v1/reservation/inventory
+Content-Type: application/json
+
+{
+  "hotelId": 101,
+  "startDate": "2025-02-01",
+  "endDate": "2025-02-03"
+}
