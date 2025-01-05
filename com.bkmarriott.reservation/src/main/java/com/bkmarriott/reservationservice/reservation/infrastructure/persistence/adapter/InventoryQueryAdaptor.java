@@ -4,8 +4,8 @@ import com.bkmarriott.reservationservice.reservation.domain.vo.RoomType;
 import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.entity.RoomTypeInventoryEntity;
 import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.entity.RoomTypeInventoryId;
 import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.repository.InventoryRepository;
-import com.bkmarriott.reservationservice.reservation.presentation.rest.exception.ResourceNotFoundException;
 import java.time.LocalDate;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,9 +17,8 @@ public class InventoryQueryAdaptor{
 
   private final InventoryRepository inventoryRepository;
 
-  public RoomTypeInventoryEntity findById(Long hotelId, LocalDate date,
+  public Optional<RoomTypeInventoryEntity> findById(Long hotelId, LocalDate date,
       RoomType roomType) {
-    return inventoryRepository.findById(RoomTypeInventoryId.from(hotelId,date,roomType))
-        .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 인벤토리 정보"));
+    return inventoryRepository.findById(RoomTypeInventoryId.from(hotelId,date,roomType));
   }
 }
