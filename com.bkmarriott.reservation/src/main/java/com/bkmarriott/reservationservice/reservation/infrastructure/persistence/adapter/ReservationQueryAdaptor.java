@@ -1,8 +1,10 @@
 package com.bkmarriott.reservationservice.reservation.infrastructure.persistence.adapter;
 
+import com.bkmarriott.reservationservice.reservation.application.outputport.ReservationQueryOutputPort;
+import com.bkmarriott.reservationservice.reservation.domain.Reservation;
 import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.entity.ReservationEntity;
 import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.repository.ReservationRepository;
-import com.bkmarriott.reservationservice.reservation.presentation.rest.exception.ResourceNotFoundException;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,12 +12,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @RequiredArgsConstructor
 @Transactional
-public class ReservationQueryAdaptor {
+public class ReservationQueryAdaptor implements ReservationQueryOutputPort {
 
   private final ReservationRepository reservationRepository;
 
-  public ReservationEntity findById(Long hotelId) {
-    return reservationRepository.findById(hotelId)
-        .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 예약 정보"));
+  @Override
+  public Optional<Reservation> findById(Long reservationId) {
+    return reservationRepository.findById(reservationId)
+        .map(ReservationEntity::toDomain);
   }
 }

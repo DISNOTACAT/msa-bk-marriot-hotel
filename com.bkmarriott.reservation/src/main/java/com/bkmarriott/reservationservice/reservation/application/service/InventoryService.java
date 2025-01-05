@@ -2,10 +2,10 @@ package com.bkmarriott.reservationservice.reservation.application.service;
 
 import com.bkmarriott.reservationservice.reservation.application.exception.InventoryUpdateFailureException;
 import com.bkmarriott.reservationservice.reservation.application.outputport.InventoryCommandOutputPort;
+import com.bkmarriott.reservationservice.reservation.application.outputport.ReservationQueryOutputPort;
 import com.bkmarriott.reservationservice.reservation.domain.Inventory;
 import com.bkmarriott.reservationservice.reservation.domain.Reservation;
 import com.bkmarriott.reservationservice.reservation.domain.vo.ReservationStatus;
-import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.adapter.ReservationQueryAdaptor;
 import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.repository.InventoryQueryDslRepository;
 import com.bkmarriott.reservationservice.reservation.presentation.rest.dto.query.InventoryQuery.Request;
 import com.bkmarriott.reservationservice.reservation.presentation.rest.dto.query.InventoryQuery.Response;
@@ -21,12 +21,13 @@ import org.springframework.stereotype.Service;
 public class InventoryService {
 
   private final InventoryCommandOutputPort inventoryCommandOutputPort;
-  private final ReservationQueryAdaptor reservationQueryAdaptor;
+  private final ReservationQueryOutputPort reservationQueryOutputPort;
   private final InventoryQueryDslRepository inventoryQueryDslRepository;
 
   public List<Inventory> updateTotalReserved(Long reservationId) {
 
-    Reservation reservation = reservationQueryAdaptor.findById(reservationId).toDomain();
+    Reservation reservation = reservationQueryOutputPort.findById(reservationId)
+        .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 예약 정보"));
 
     try {
 
