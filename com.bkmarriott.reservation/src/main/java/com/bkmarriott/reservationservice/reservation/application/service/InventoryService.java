@@ -9,6 +9,7 @@ import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.
 import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.repository.InventoryQueryDslRepository;
 import com.bkmarriott.reservationservice.reservation.presentation.rest.dto.query.InventoryQuery.Request;
 import com.bkmarriott.reservationservice.reservation.presentation.rest.dto.query.InventoryQuery.Response;
+import com.bkmarriott.reservationservice.reservation.presentation.rest.exception.ResourceNotFoundException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,9 +24,9 @@ public class InventoryService {
   private final ReservationQueryAdaptor reservationQueryAdaptor;
   private final InventoryQueryDslRepository inventoryQueryDslRepository;
 
-  public List<Inventory> updateTotalReserved(Long hotelId) {
+  public List<Inventory> updateTotalReserved(Long reservationId) {
 
-    Reservation reservation = reservationQueryAdaptor.findById(hotelId).toDomain();
+    Reservation reservation = reservationQueryAdaptor.findById(reservationId).toDomain();
 
     try {
 
@@ -33,17 +34,21 @@ public class InventoryService {
           log.debug("[InventoryService] [Increase totalReserved] hotelId ::: {}, roomtype ::: {}"
               , reservation.getHotelId(), reservation.getRoomType());
 
-        return reservation.toDamain().stream()
-            .map(inventoryCommandOutputPort::increaseReserved)
-            .toList();
+          return Inventory.from(reservation)
+              .stream()
+              .map(inventory -> inventoryCommandOutputPort.increaseReserved(inventory)
+                  .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 인벤토리 정보")))
+              .toList();
         }
 
       if (reservation.getStatus().equals(ReservationStatus.CANCELLED) || reservation.getStatus().equals(ReservationStatus.REFUNDED)) {
         log.debug("[InventoryService] [Decrease totalReserved] hotelId ::: {}, roomtype ::: {}"
             , reservation.getHotelId(), reservation.getRoomType());
 
-        return reservation.toDamain().stream()
-            .map(inventoryCommandOutputPort::decreaseReserved)
+        return Inventory.from(reservation)
+            .stream()
+            .map(inventory -> inventoryCommandOutputPort.decreaseReserved(inventory)
+                .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 인벤토리 정보")))
             .toList();
         }
 
