@@ -42,8 +42,8 @@ class InventoryCommandAdaptorTest {
 
 
   @Test
-  @DisplayName("[인벤토리 예약 객실 수정 성공 테스트] 인벤토리 도메인이 주어졌을 시, 예약 객실 수를 증가시킨 후 도메인 객체를 반환한다.")
-  void update_successTest() {
+  @DisplayName("[인벤토리 예약 객실 증가 성공 테스트] 인벤토리 도메인이 주어졌을 시, 예약 객실 수를 증가시킨 후 도메인 객체를 반환한다.")
+  void update_increase_successTest() {
 
     //Given
     Inventory inventory = testInventory();
@@ -56,6 +56,24 @@ class InventoryCommandAdaptorTest {
         () -> Assertions.assertEquals(inventory.getRoomType(), actual.get().getRoomType()),
         () -> Assertions.assertEquals(inventory.getTotalInventory(), actual.get().getTotalInventory()),
         () -> Assertions.assertEquals(inventory.getTotalReserved() + 1, actual.get().getTotalReserved())
+    );
+  }
+
+  @Test
+  @DisplayName("[인벤토리 예약 객실 감소 성공 테스트] 인벤토리 도메인이 주어졌을 시, 예약 객실 수를 감소시킨 후 도메인 객체를 반환한다.")
+  void update_decrease_successTest() {
+
+    //Given
+    Inventory inventory = testInventory();
+    //When
+    Optional<Inventory> actual = inventoryCommandAdaptor.decreaseReserved(inventory);
+    //Then
+    Assertions.assertAll(
+        () -> Assertions.assertEquals(inventory.getHotelId(), actual.get().getHotelId()),
+        () -> Assertions.assertEquals(inventory.getDate(), actual.get().getDate()),
+        () -> Assertions.assertEquals(inventory.getRoomType(), actual.get().getRoomType()),
+        () -> Assertions.assertEquals(inventory.getTotalInventory(), actual.get().getTotalInventory()),
+        () -> Assertions.assertEquals(inventory.getTotalReserved() - 1, actual.get().getTotalReserved())
     );
   }
 

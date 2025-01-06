@@ -50,7 +50,7 @@ class InventoryCommandControllerTest {
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].hotelId").value(101))
         .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].date").value(LocalDate.of(2025, 2, 1).toString()))
-        .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].roomType").value(RoomType.DELUXE))
+        .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].roomType").value(RoomType.DELUXE.toString()))
         .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].totalInventory").value(80))
         .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].totalReserved").value(79));
   }
