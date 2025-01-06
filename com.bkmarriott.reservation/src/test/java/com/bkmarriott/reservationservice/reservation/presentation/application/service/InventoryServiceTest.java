@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.bkmarriott.reservationservice.reservation.application.dto.InventoryQueryRequestDto;
 import com.bkmarriott.reservationservice.reservation.application.dto.InventoryQueryResponseDto;
+import com.bkmarriott.reservationservice.reservation.application.exception.InventoryUpdateFailureException;
 import com.bkmarriott.reservationservice.reservation.application.exception.ResourceNotFoundException;
 import com.bkmarriott.reservationservice.reservation.application.outputport.InventoryCommandOutputPort;
 import com.bkmarriott.reservationservice.reservation.application.outputport.InventoryQueryOutputPort;
@@ -45,15 +46,15 @@ class InventoryServiceTest {
   void update_increase_successTest() {
     //Given
     Long reservationId = 1L;
-    Reservation mockReservation = Reservation.builder()
-        .reservationId(reservationId)
-        .userId(1L)
-        .hotelId(101L)
-        .startDate(LocalDate.of(2025, 2, 1))
-        .endDate(LocalDate.of(2025, 2, 2))
-        .roomType(RoomType.DELUXE)
-        .status(ReservationStatus.PAID)
-        .build();
+    Reservation mockReservation = new Reservation(
+        reservationId,
+        1L,
+        101L,
+        LocalDate.of(2025, 2, 1),
+        LocalDate.of(2025, 2, 2),
+        RoomType.DELUXE,
+        ReservationStatus.PAID
+    );
 
     Inventory mockInventory = Inventory.of(
     101L, LocalDate.of(2025, 2, 1), RoomType.DELUXE, 80, 78);
@@ -86,15 +87,15 @@ class InventoryServiceTest {
   void update_decrease_successTest() {
     //Given
     Long reservationId = 1L;
-    Reservation mockReservation = Reservation.builder()
-        .reservationId(reservationId)
-        .userId(1L)
-        .hotelId(101L)
-        .startDate(LocalDate.of(2025, 2, 1))
-        .endDate(LocalDate.of(2025, 2, 2))
-        .roomType(RoomType.DELUXE)
-        .status(ReservationStatus.CANCELLED)
-        .build();
+    Reservation mockReservation = new Reservation(
+        reservationId,
+        1L,
+        101L,
+        LocalDate.of(2025, 2, 1),
+        LocalDate.of(2025, 2, 2),
+        RoomType.DELUXE,
+        ReservationStatus.CANCELLED
+    );
 
     Inventory mockInventory = Inventory.of(
         101L, LocalDate.of(2025, 2, 1), RoomType.DELUXE, 80, 78);
@@ -187,6 +188,35 @@ class InventoryServiceTest {
             () -> inventoryService.getInventoryQuantity(hotelId, startDate, endDate))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("예약 가능 객실 수량 조회 결과가 없습니다.")
+    );
+  }
+
+  @Test
+  @DisplayName("[인벤토리 예약 객실 수정 실패 테스트] 예기치 못한 예외 발생 시 InventoryUpdateFailureException이 발생한다.")
+  void update_increase_failureTest_dueToUnexpectedError() {
+    // Given
+    Long reservationId = 1L;
+    Reservation mockReservation = new Reservation(
+        reservationId,
+        1L,
+        101L,
+        LocalDate.of(2025, 2, 1),
+        LocalDate.of(2025, 2, 2),
+        RoomType.DELUXE,
+        ReservationStatus.PAID
+    );
+
+    Mockito.when(reservationQueryOutputPort.findById(reservationId))
+        .thenReturn(Optional.of(mockReservation));
+
+    Mockito.when(inventoryCommandOutputPort.increaseReserved(Mockito.any(Inventory.class)))
+        .thenThrow(new RuntimeException("예기치 못한 오류"));
+
+    // When & Then
+    Assertions.assertAll(
+        () -> assertThatThrownBy(() -> inventoryService.updateTotalReserved(reservationId))
+            .isInstanceOf(InventoryUpdateFailureException.class)
+            .hasMessage("객실 예약 인벤토리 정보 수정 실패")
     );
   }
 }
