@@ -33,13 +33,13 @@ class InventoryCommandControllerTest {
 
     String requestUrl = "/api/v1/reservations/inventories?reservationId=" + reservationId;
 
-    Inventory increase = Inventory.builder()
-        .hotelId(101L)
-        .date(LocalDate.of(2025, 2, 1))
-        .roomType(RoomType.DELUXE)
-        .totalInventory(80)
-        .totalReserved(79)
-        .build();
+    Inventory increase = new Inventory(
+        101L,
+        LocalDate.of(2025, 2, 1),
+        RoomType.DELUXE,
+        80,
+        79
+    );
 
     Mockito.when(inventoryService.updateTotalReserved(reservationId))
             .thenReturn(List.of(increase));

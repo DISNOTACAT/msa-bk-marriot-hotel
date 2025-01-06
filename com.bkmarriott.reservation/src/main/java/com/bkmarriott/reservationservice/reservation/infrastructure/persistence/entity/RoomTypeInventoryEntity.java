@@ -8,13 +8,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-@Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "m_room_type_inventory")
 @Entity
@@ -31,13 +29,12 @@ public class RoomTypeInventoryEntity extends BaseEntity {
 
 
   public Inventory toDomain() {
-    return Inventory.builder()
-        .hotelId(id.getHotelId())
-        .date(id.getDate())
-        .roomType(id.getRoomType().toDomain())
-        .totalInventory(totalInventory)
-        .totalReserved(totalReserved)
-        .build();
+    return new Inventory(
+        id.getHotelId(),
+        id.getDate(),
+        id.getRoomType().toDomain(),
+        totalInventory,
+        totalReserved);
   }
 
   public RoomTypeInventoryEntity increaseReserved() {

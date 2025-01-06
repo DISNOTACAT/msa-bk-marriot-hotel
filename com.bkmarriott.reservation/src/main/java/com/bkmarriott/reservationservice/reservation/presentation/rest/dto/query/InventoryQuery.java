@@ -36,7 +36,6 @@ public class InventoryQuery {
     private RoomType roomType;
     private int quantity;
 
-
     public Response(RoomType roomType, int quantity) {
       this.roomType = roomType;
       this.quantity = (int) Math.floor(quantity * ROOM_SPACE_POLICY);
@@ -47,6 +46,4 @@ public class InventoryQuery {
       return new Response(responseDto.getRoomType(), responseDto.getQuantity());
     }
   }
-
-
 }

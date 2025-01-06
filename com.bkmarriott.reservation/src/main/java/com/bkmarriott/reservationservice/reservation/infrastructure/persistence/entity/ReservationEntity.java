@@ -47,15 +47,14 @@ public class ReservationEntity extends BaseEntity {
   private ReservationEntityStatus status;
 
   public Reservation toDomain() {
-    return Reservation.builder()
-        .reservationId(id)
-        .userId(userId)
-        .hotelId(hotelId)
-        .startDate(startDate)
-        .endDate(endDate)
-        .roomType(roomType.toDomain())
-        .status(status.toDomain())
-        .build();
+    return new Reservation(
+        id,
+        userId,
+        hotelId,
+        startDate,
+        endDate,
+        roomType.toDomain(),
+        status.toDomain());
   }
 
 

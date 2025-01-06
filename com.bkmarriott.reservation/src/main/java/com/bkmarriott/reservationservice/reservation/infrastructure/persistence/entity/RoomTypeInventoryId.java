@@ -7,7 +7,6 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import java.io.Serializable;
 import java.time.LocalDate;
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,7 +27,6 @@ public class RoomTypeInventoryId implements Serializable {
   @Enumerated(EnumType.STRING)
   private RoomEntityType roomType;
 
-  @Builder
   public RoomTypeInventoryId(Long hotelId, LocalDate date,
       RoomEntityType roomType) {
     this.hotelId = hotelId;
@@ -37,10 +35,6 @@ public class RoomTypeInventoryId implements Serializable {
   }
 
   public static RoomTypeInventoryId of(Long hotelId, LocalDate date, RoomType roomType) {
-    return RoomTypeInventoryId.builder()
-        .hotelId(hotelId)
-        .date(date)
-        .roomType(RoomEntityType.fromDomain(roomType))
-        .build();
+    return new RoomTypeInventoryId(hotelId,date,RoomEntityType.fromDomain(roomType));
   }
 }

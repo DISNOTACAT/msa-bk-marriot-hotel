@@ -31,6 +31,4 @@ public class InventoryQueryDslRepository {
         .groupBy(roomTypeInventoryEntity.id.roomType)
         .fetch();
   }
-
-
 }

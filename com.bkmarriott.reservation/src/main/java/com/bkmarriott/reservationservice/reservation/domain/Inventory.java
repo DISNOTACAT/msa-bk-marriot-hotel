@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Builder
+@AllArgsConstructor
+@Builder(access = AccessLevel.PRIVATE)
 public class Inventory {
 
   private Long hotelId;
