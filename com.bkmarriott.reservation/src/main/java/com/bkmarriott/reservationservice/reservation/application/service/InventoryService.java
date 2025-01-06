@@ -1,15 +1,17 @@
 package com.bkmarriott.reservationservice.reservation.application.service;
 
+import com.bkmarriott.reservationservice.reservation.application.dto.InventoryQueryRequestDto;
+import com.bkmarriott.reservationservice.reservation.application.dto.InventoryQueryResponseDto;
 import com.bkmarriott.reservationservice.reservation.application.exception.InventoryUpdateFailureException;
 import com.bkmarriott.reservationservice.reservation.application.outputport.InventoryCommandOutputPort;
+import com.bkmarriott.reservationservice.reservation.application.outputport.InventoryQueryOutputPort;
 import com.bkmarriott.reservationservice.reservation.application.outputport.ReservationQueryOutputPort;
 import com.bkmarriott.reservationservice.reservation.domain.Inventory;
 import com.bkmarriott.reservationservice.reservation.domain.Reservation;
 import com.bkmarriott.reservationservice.reservation.domain.vo.ReservationStatus;
-import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.repository.InventoryQueryDslRepository;
-import com.bkmarriott.reservationservice.reservation.presentation.rest.dto.query.InventoryQuery.Request;
 import com.bkmarriott.reservationservice.reservation.presentation.rest.dto.query.InventoryQuery.Response;
-import com.bkmarriott.reservationservice.reservation.presentation.rest.exception.ResourceNotFoundException;
+import com.bkmarriott.reservationservice.reservation.application.exception.ResourceNotFoundException;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,8 +23,9 @@ import org.springframework.stereotype.Service;
 public class InventoryService {
 
   private final InventoryCommandOutputPort inventoryCommandOutputPort;
+  private final InventoryQueryOutputPort inventoryQueryOutputPort;
   private final ReservationQueryOutputPort reservationQueryOutputPort;
-  private final InventoryQueryDslRepository inventoryQueryDslRepository;
+
 
   public List<Inventory> updateTotalReserved(Long reservationId) {
 
@@ -63,17 +66,19 @@ public class InventoryService {
 
   }
 
-  public List<Response> getInventoryQuantity(Request request) {
+  public List<Response> getInventoryQuantity(Long hotelId, LocalDate startDate, LocalDate endDate) {
 
-    try {
-      return inventoryQueryDslRepository.findAvailableRoomsByHotelIdAndDateRange(
-          request.getHotelId()
-          , request.getStartDate()
-          , request.getEndDate());
-    } catch (Exception e) {
-      log.error("[InventoryService] [getInventoryQuantity] hotelId ::: {}, startDate ::: {}, endDate ::: {}",
-          request.getHotelId(), request.getStartDate(), request.getEndDate(), e);
-      throw new IllegalArgumentException("예약 가능 객실 수량 조회 실패");
+    List<InventoryQueryResponseDto> availableRooms = inventoryQueryOutputPort
+        .findAvailableRoomsByHotelIdAndDateRange(new InventoryQueryRequestDto(
+            hotelId,startDate,endDate
+        ));
+
+    if (availableRooms == null || availableRooms.isEmpty()) {
+      log.warn("[InventoryService] [find Available Rooms] hotelId: {}, startDate: {}, endDate: {}",
+          hotelId, startDate, endDate);
+      throw new IllegalArgumentException("예약 가능 객실 수량 조회 결과가 없습니다.");
     }
+
+    return availableRooms.stream().map(Response::from).toList();
   }
 }
