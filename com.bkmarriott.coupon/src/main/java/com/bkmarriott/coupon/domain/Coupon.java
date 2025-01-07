@@ -1,9 +1,11 @@
 package com.bkmarriott.coupon.domain;
 
+import java.time.LocalDateTime;
 import lombok.Getter;
 
 @Getter
 public class Coupon {
+
     private Long id;
     private CouponPolicy couponPolicy;
     private String name;
@@ -14,5 +16,9 @@ public class Coupon {
         this.couponPolicy = couponPolicy;
         this.name = name;
         this.discountRate = discountRate;
+    }
+
+    public LocalDateTime calcCouponExpireTime(LocalDateTime baseTime) {
+        return couponPolicy.calcExpireTime(baseTime);
     }
 }

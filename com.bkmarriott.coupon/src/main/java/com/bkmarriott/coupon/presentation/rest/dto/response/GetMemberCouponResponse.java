@@ -1,7 +1,7 @@
 package com.bkmarriott.coupon.presentation.rest.dto.response;
 
 import com.bkmarriott.coupon.domain.Coupon;
-import com.bkmarriott.coupon.domain.MemberCoupon;
+import com.bkmarriott.coupon.domain.UserCoupon;
 import java.time.LocalDateTime;
 
 public record GetMemberCouponResponse(
@@ -12,14 +12,14 @@ public record GetMemberCouponResponse(
         LocalDateTime spendingAt,
         LocalDateTime expiredAt
 ) {
-    public static GetMemberCouponResponse from(MemberCoupon memberCoupon) {
+    public static GetMemberCouponResponse from(UserCoupon userCoupon) {
         return new GetMemberCouponResponse(
-                memberCoupon.getId(),
-                memberCoupon.getCoupon(),
-                memberCoupon.getMemberId(),
-                memberCoupon.getIssuanceAt(),
-                memberCoupon.getSpendingAt(),
-                memberCoupon.getExpiredAt()
+                userCoupon.getId(),
+                userCoupon.getCoupon(),
+                userCoupon.getUserId(),
+                userCoupon.getIssuedAt(),
+                userCoupon.getSpentAt(),
+                userCoupon.getExpiredAt()
         );
     }
 }

@@ -12,7 +12,7 @@ import org.springframework.test.context.ActiveProfiles;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @DataJpaTest
-@Import(PersistenceConfig.class)
+@Import(PersistenceTestConfig.class)
 @ActiveProfiles("test")
 public @interface RepositoryTest {
 

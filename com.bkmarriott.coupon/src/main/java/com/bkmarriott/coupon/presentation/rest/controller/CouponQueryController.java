@@ -1,7 +1,6 @@
 package com.bkmarriott.coupon.presentation.rest.controller;
 
-import com.bkmarriott.coupon.application.outputport.MemberCouponOutputPort;
-import com.bkmarriott.coupon.infrastructure.persistence.adapter.MemberCouponQueryAdapter;
+import com.bkmarriott.coupon.infrastructure.persistence.adapter.UserCouponQueryAdapter;
 import com.bkmarriott.coupon.presentation.rest.dto.response.GetMemberCouponResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,10 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/coupons")
 @RestController
 public class CouponQueryController {
-    private final MemberCouponOutputPort memberCouponOutputPort;
 
-    @GetMapping("/member-coupons/{id}")
-    public ResponseEntity<GetMemberCouponResponse> getMemberCoupon(@PathVariable Long id) {
-        return ResponseEntity.ok(GetMemberCouponResponse.from(memberCouponOutputPort.getById(id)));
+    private final UserCouponQueryAdapter userCouponQueryAdapter;
+
+    @GetMapping("/user-coupons/{id}")
+    public ResponseEntity<GetMemberCouponResponse> getUserCoupon(@PathVariable Long id) {
+        return ResponseEntity.ok(GetMemberCouponResponse.from(userCouponQueryAdapter.getById(id)));
     }
 }

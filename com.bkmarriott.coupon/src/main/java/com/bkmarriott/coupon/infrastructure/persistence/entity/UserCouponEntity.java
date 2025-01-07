@@ -1,6 +1,6 @@
 package com.bkmarriott.coupon.infrastructure.persistence.entity;
 
-import com.bkmarriott.coupon.domain.MemberCoupon;
+import com.bkmarriott.coupon.domain.UserCoupon;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -16,9 +16,9 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-@Table(name = "m_member_coupon")
-@Entity(name = "MemberCoupon")
-public class MemberCouponEntity extends BaseEntity {
+@Table(name = "m_user_coupon")
+@Entity(name = "UserCoupon")
+public class UserCouponEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,7 +29,7 @@ public class MemberCouponEntity extends BaseEntity {
     private CouponEntity coupon;
 
     @Column(nullable = false)
-    private Long memberId;
+    private Long userId;
 
     @Column(nullable = false)
     private LocalDateTime issuanceAt;
@@ -39,29 +39,29 @@ public class MemberCouponEntity extends BaseEntity {
     @Column(nullable = false)
     private LocalDateTime expiredAt;
 
-    public MemberCouponEntity(Long id, CouponEntity coupon, Long memberId, LocalDateTime issuanceAt,
+    public UserCouponEntity(Long id, CouponEntity coupon, Long userId, LocalDateTime issuanceAt,
                               LocalDateTime spendingAt, LocalDateTime expiredAt) {
-        super.createdByUser(memberId);
+        super.createdByUser(userId);
         this.id = id;
         this.coupon = coupon;
-        this.memberId = memberId;
+        this.userId = userId;
         this.issuanceAt = issuanceAt;
         this.spendingAt = spendingAt;
         this.expiredAt = expiredAt;
     }
 
-    public MemberCoupon toDomain() {
-        return new MemberCoupon(id, coupon.toDomain(), memberId, issuanceAt, spendingAt, expiredAt);
+    public UserCoupon toDomain() {
+        return new UserCoupon(id, coupon.toDomain(), userId, issuanceAt, spendingAt, expiredAt);
     }
 
-    public static MemberCouponEntity from(MemberCoupon memberCoupon) {
-        return new MemberCouponEntity(
-                memberCoupon.getId(),
-                CouponEntity.from(memberCoupon.getCoupon()),
-                memberCoupon.getMemberId(),
-                memberCoupon.getIssuanceAt(),
-                memberCoupon.getSpendingAt(),
-                memberCoupon.getExpiredAt()
+    public static UserCouponEntity from(UserCoupon userCoupon) {
+        return new UserCouponEntity(
+                userCoupon.getId(),
+                CouponEntity.from(userCoupon.getCoupon()),
+                userCoupon.getUserId(),
+                userCoupon.getIssuedAt(),
+                userCoupon.getSpentAt(),
+                userCoupon.getExpiredAt()
         );
     }
 }

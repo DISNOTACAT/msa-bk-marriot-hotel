@@ -46,13 +46,13 @@ public class CouponPolicyEntity extends BaseEntity {
     }
 
     public CouponPolicy toDomain() {
-        return new CouponPolicy(id, type, afterDay, startedAt, endedAt);
+        return new CouponPolicy(id, type.toDomain(), afterDay, startedAt, endedAt);
     }
 
     public static CouponPolicyEntity from(CouponPolicy couponPolicy) {
         return new CouponPolicyEntity(
                 couponPolicy.getId(),
-                couponPolicy.getType(),
+                CouponPolicyEntityType.valueOf(couponPolicy.getType().name()),
                 couponPolicy.getAfterDay(),
                 couponPolicy.getStartedAt(),
                 couponPolicy.getEndedAt()

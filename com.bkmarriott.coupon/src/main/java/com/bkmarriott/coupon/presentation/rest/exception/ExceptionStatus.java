@@ -5,7 +5,8 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 public enum ExceptionStatus {
-    MEMBER_COUPON_NOT_FOUND(HttpStatus.NOT_FOUND, "C_001", "해당하는 Member Coupon을 찾을 수 없습니다.");
+
+    USER_COUPON_NOT_FOUND(HttpStatus.NOT_FOUND, "C_001", "해당하는 User Coupon을 찾을 수 없습니다.");
 
     private final int status;
     private final String customCode;

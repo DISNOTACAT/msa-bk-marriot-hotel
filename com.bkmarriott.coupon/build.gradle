@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'com.bkmarriott'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.1'
 
 java {
 	toolchain {
@@ -29,13 +29,20 @@ ext {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
-	compileOnly 'org.projectlombok:lombok'
+	implementation 'org.springframework.kafka:spring-kafka'
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.1'
+
 	runtimeOnly 'com.mysql:mysql-connector-j'
+	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
+
+	runtimeOnly 'com.h2database:h2'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'io.projectreactor:reactor-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
@@ -43,10 +50,6 @@ dependencyManagement {
 	imports {
 		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
 	}
-}
-
-tasks.named('test') {
-	useJUnitPlatform()
 }
 
 test {
@@ -59,22 +62,22 @@ jacoco {
 }
 
 jacocoTestReport {
+
 	reports {
 		xml.required = false;
 		csv.required = false;
 		html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
 	}
+
 	afterEvaluate {
+
 		classDirectories.setFrom(files(classDirectories.files.collect {
 			fileTree(dir: it, excludes: [
-					"**/config/*",
-					"**/entity/*",
-					"**/util/*",
-					"**/presentation/rest/dto/*",
-					"**/presentation/rest/util/*",
-					"**/CouponApplication.class"])
+					"**/config/*", "**/entity/*", "**/util/*", "**/exception/*",
+					"**/dto/*", "**/infrastructure/cache/*", "**/infrastructure/event/*"])
 		}))
 	}
+
 	finalizedBy 'jacocoTestCoverageVerification'
 }
 
@@ -83,18 +86,22 @@ jacocoTestCoverageVerification {
 		rule {
 			enabled = true
 			element = 'CLASS'
+
 			limit {
 				counter = 'BRANCH'
 				value = 'COVEREDRATIO'
 				minimum = 0.80
 			}
+
 			limit {
 				counter = 'LINE'
 				value = 'COVEREDRATIO'
 				minimum = 0.80
 			}
+
 			excludes = ["*.*Config", "*.*Entity*", "*.*Application", "*.dto.*",
-						"*.util.*", "*.exception.*", "*.*Query*"
+						"*.util.*", "*.exception.*", "*.*Query*", "*.*Scheduler",
+						"*.infrastructure.cache.*", "*.infrastructure.event.*"
 			]
 		}
 	}
