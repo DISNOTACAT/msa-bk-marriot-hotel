@@ -1,7 +1,7 @@
-package com.bkmarriott.reservationservice.reservation.presentation.rest.dto.command;
+package com.bkmarriott.reservationservice.reservation.presentation.rest.dto.inventory;
 
 import com.bkmarriott.reservationservice.reservation.domain.Inventory;
-import com.bkmarriott.reservationservice.reservation.domain.vo.RoomType;
+import com.bkmarriott.reservationservice.reservation.domain.vo.inventory.RoomType;
 import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

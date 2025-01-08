@@ -1,4 +1,4 @@
-package com.bkmarriott.reservationservice.reservation.presentation.rest.dto.inventory.query;
+package com.bkmarriott.reservationservice.reservation.presentation.rest.dto.inventory;
 
 import com.bkmarriott.reservationservice.reservation.application.dto.inventory.InventoryQueryResponseDto;
 import com.bkmarriott.reservationservice.reservation.domain.vo.inventory.RoomType;

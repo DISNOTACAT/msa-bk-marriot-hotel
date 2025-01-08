@@ -1,7 +1,7 @@
 package com.bkmarriott.reservationservice.reservation.presentation.rest.controller;
 
 import com.bkmarriott.reservationservice.reservation.application.service.InventoryService;
-import com.bkmarriott.reservationservice.reservation.presentation.rest.dto.command.InventoryModification.Response;
+import com.bkmarriott.reservationservice.reservation.presentation.rest.dto.inventory.InventoryModification.Response;
 import com.bkmarriott.reservationservice.reservation.presentation.rest.util.reponse.ApiResponse;
 import com.bkmarriott.reservationservice.reservation.presentation.rest.util.reponse.ApiResponse.Success;
 import java.util.List;

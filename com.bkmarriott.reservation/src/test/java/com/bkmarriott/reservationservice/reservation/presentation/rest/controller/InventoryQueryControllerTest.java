@@ -5,7 +5,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import com.bkmarriott.reservationservice.reservation.application.service.InventoryService;
 import com.bkmarriott.reservationservice.reservation.domain.vo.inventory.RoomType;
 import com.bkmarriott.reservationservice.reservation.presentation.rest.controller.inventory.InventoryQueryController;
-import com.bkmarriott.reservationservice.reservation.presentation.rest.dto.inventory.query.InventoryQuery.Response;
+import com.bkmarriott.reservationservice.reservation.presentation.rest.dto.inventory.InventoryQuery.Response;
 import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
