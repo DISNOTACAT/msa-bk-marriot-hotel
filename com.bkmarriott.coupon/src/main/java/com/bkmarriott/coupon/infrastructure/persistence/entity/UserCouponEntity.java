@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -39,8 +40,12 @@ public class UserCouponEntity extends BaseEntity {
     @Column(nullable = false)
     private LocalDateTime expiredAt;
 
+    @Version
+    @Column(nullable = false)
+    private Long version;
+
     public UserCouponEntity(Long id, CouponEntity coupon, Long userId, LocalDateTime issuanceAt,
-                              LocalDateTime spendingAt, LocalDateTime expiredAt) {
+                              LocalDateTime spendingAt, LocalDateTime expiredAt, Long version) {
         super.createdByUser(userId);
         this.id = id;
         this.coupon = coupon;
@@ -48,10 +53,11 @@ public class UserCouponEntity extends BaseEntity {
         this.issuanceAt = issuanceAt;
         this.spendingAt = spendingAt;
         this.expiredAt = expiredAt;
+        this.version = version;
     }
 
     public UserCoupon toDomain() {
-        return new UserCoupon(id, coupon.toDomain(), userId, issuanceAt, spendingAt, expiredAt);
+        return new UserCoupon(id, coupon.toDomain(), userId, issuanceAt, spendingAt, expiredAt, version);
     }
 
     public static UserCouponEntity from(UserCoupon userCoupon) {
@@ -61,7 +67,14 @@ public class UserCouponEntity extends BaseEntity {
                 userCoupon.getUserId(),
                 userCoupon.getIssuedAt(),
                 userCoupon.getSpentAt(),
-                userCoupon.getExpiredAt()
+                userCoupon.getExpiredAt(),
+                userCoupon.getVersion()
         );
     }
+
+    public UserCouponEntity updateSpentAt(UserCoupon userCoupon) {
+        this.spendingAt = userCoupon.getSpentAt();
+        return this;
+    }
+
 }

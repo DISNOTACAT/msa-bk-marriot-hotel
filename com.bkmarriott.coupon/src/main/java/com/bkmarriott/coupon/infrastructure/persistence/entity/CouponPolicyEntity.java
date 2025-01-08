@@ -38,6 +38,7 @@ public class CouponPolicyEntity extends BaseEntity {
 
     public CouponPolicyEntity(Long id, CouponPolicyEntityType type, Integer afterDay, LocalDateTime startedAt,
                               LocalDateTime endedAt) {
+        super.createdBySystem();
         this.id = id;
         this.type = type;
         this.afterDay = afterDay;

@@ -4,16 +4,16 @@ import com.bkmarriott.coupon.domain.Coupon;
 import com.bkmarriott.coupon.domain.UserCoupon;
 import java.time.LocalDateTime;
 
-public record GetMemberCouponResponse(
+public record PatchUserCouponResponse(
         Long id,
         Coupon coupon,
-        Long memberId,
-        LocalDateTime issuanceAt,
-        LocalDateTime spendingAt,
+        Long userId,
+        LocalDateTime issuedAt,
+        LocalDateTime spentAt,
         LocalDateTime expiredAt
 ) {
-    public static GetMemberCouponResponse from(UserCoupon userCoupon) {
-        return new GetMemberCouponResponse(
+    public static PatchUserCouponResponse from(UserCoupon userCoupon) {
+        return new PatchUserCouponResponse(
                 userCoupon.getId(),
                 userCoupon.getCoupon(),
                 userCoupon.getUserId(),

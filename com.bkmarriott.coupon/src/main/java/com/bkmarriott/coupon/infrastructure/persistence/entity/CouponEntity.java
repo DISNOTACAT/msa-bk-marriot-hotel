@@ -38,6 +38,7 @@ public class CouponEntity extends BaseEntity {
     private Float discountRate;
 
     public CouponEntity(Long id, CouponPolicyEntity couponPolicy, String name, Float discountRate) {
+        super.createdBySystem();
         this.id = id;
         this.couponPolicy = couponPolicy;
         this.name = name;

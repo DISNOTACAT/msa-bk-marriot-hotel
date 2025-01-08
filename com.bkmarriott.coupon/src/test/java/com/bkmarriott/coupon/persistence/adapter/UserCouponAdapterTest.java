@@ -6,7 +6,10 @@ import com.bkmarriott.coupon.domain.UserCoupon;
 import com.bkmarriott.coupon.domain.vo.CouponPolicyType;
 import com.bkmarriott.coupon.infrastructure.persistence.adapter.UserCouponCommandPersistenceAdapter;
 import com.bkmarriott.coupon.infrastructure.persistence.adapter.UserCouponQueryAdapter;
-import com.bkmarriott.coupon.infrastructure.persistence.entity.CouponPolicyEntityType;
+import com.bkmarriott.coupon.infrastructure.persistence.entity.CouponEntity;
+import com.bkmarriott.coupon.infrastructure.persistence.entity.CouponPolicyEntity;
+import com.bkmarriott.coupon.infrastructure.persistence.repository.CouponPolicyRepository;
+import com.bkmarriott.coupon.infrastructure.persistence.repository.CouponRepository;
 import com.bkmarriott.coupon.persistence.config.RepositoryTest;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.Assertions;
@@ -14,7 +17,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.transaction.annotation.Transactional;
 
 @DisplayName("[Infrastructure] [Integration] UserCoupon Adapter Test")
 @RepositoryTest
@@ -22,21 +24,26 @@ import org.springframework.transaction.annotation.Transactional;
 class UserCouponAdapterTest {
 
     @Autowired
-    private UserCouponQueryAdapter memberCouponQueryAdapter;
+    private UserCouponQueryAdapter userCouponQueryAdapter;
 
     @Autowired
     private UserCouponCommandPersistenceAdapter userCouponCommandAdapter;
 
+    @Autowired
+    private CouponPolicyRepository couponPolicyRepository;
+
+    @Autowired
+    private CouponRepository couponRepository;
+
     @Test
-    @Transactional
     @DisplayName("[성공] 유효한 쿠폰 조회 테스트 - 쿠폰 아이디로 기간이 유효하고 미사용인 쿠폰이 있으면 반환")
-    void getValidMemberCoupon_successTest() {
+    void getValidUserCoupon_successTest() {
         // Given
-        UserCoupon userCoupon = generateTestMemberCoupon();
+        UserCoupon userCoupon = generateTestUserCoupon();
 
         // When
         UserCoupon generatedCoupon = userCouponCommandAdapter.generateUserCoupon(userCoupon);
-        UserCoupon actual = memberCouponQueryAdapter.getById(generatedCoupon.getId());
+        UserCoupon actual = userCouponQueryAdapter.getById(generatedCoupon.getId());
 
         // Then
         Assertions.assertAll(
@@ -48,7 +55,7 @@ class UserCouponAdapterTest {
         );
     }
 
-    private UserCoupon generateTestMemberCoupon() {
+    private UserCoupon generateTestUserCoupon() {
         // Test (2024.01.04 11:55:00) 시점에서 유효한 테스트 쿠폰 발급
         return new UserCoupon(
                 null,
@@ -56,26 +63,50 @@ class UserCouponAdapterTest {
                 1234L,
                 LocalDateTime.of(2025, 1, 4, 0, 0, 0),
                 null,
-                LocalDateTime.of(2025, 1, 31, 0, 0, 0)
+                LocalDateTime.of(2025, 1, 31, 0, 0, 0),
+                1L
                 );
     }
 
     private Coupon generateTestCoupon() {
-        return new Coupon(
-                1L,
+        Coupon coupon = new Coupon(
+                null,
                 generateTestCouponPolicyFixedType(),
                 "Test Coupon",
                 0.1f
         );
+
+        CouponEntity couponEntity = couponRepository.save(CouponEntity.from(coupon));
+        return couponEntity.toDomain();
     }
 
     private CouponPolicy generateTestCouponPolicyFixedType() {
-        return new CouponPolicy(
-                1234L,
+        CouponPolicy couponPolicy = new CouponPolicy(
+                null,
                 CouponPolicyType.FIXED,
                 null,
                 LocalDateTime.of(2025, 1, 3, 0, 0, 0),
                 LocalDateTime.of(2025, 1, 31, 0, 0, 0)
                 );
+
+        CouponPolicyEntity couponPolicyEntity = couponPolicyRepository.save(CouponPolicyEntity.from(couponPolicy));
+        return couponPolicyEntity.toDomain();
+    }
+
+    @Test
+    @DisplayName("[성공] 사용자 쿠폰 사용 테스트 - 사용자가 요청해서 사용 가능한 쿠폰 조회 가능하면 사용 처리 업데이트")
+    void useUserCoupon_successTest() {
+        // Given
+        UserCoupon testUserCoupon = generateTestUserCoupon();
+        UserCoupon userCoupon = userCouponCommandAdapter.generateUserCoupon(testUserCoupon);
+
+        // When
+        userCoupon.updateSpentAt();
+        UserCoupon actual = userCouponCommandAdapter.update(userCoupon);
+
+        // Then
+        Assertions.assertAll(
+                () -> Assertions.assertNotNull(actual.getSpentAt())
+        );
     }
 }
