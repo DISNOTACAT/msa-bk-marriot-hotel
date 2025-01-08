@@ -1,9 +1,9 @@
 package com.bkmarriott.reservationservice.reservation.presentation.infrastructure.persistence.adapter;
 
-import com.bkmarriott.reservationservice.reservation.application.dto.InventoryQueryRequestDto;
-import com.bkmarriott.reservationservice.reservation.application.dto.InventoryQueryResponseDto;
+import com.bkmarriott.reservationservice.reservation.application.dto.inventory.InventoryQueryRequestDto;
+import com.bkmarriott.reservationservice.reservation.application.dto.inventory.InventoryQueryResponseDto;
 import com.bkmarriott.reservationservice.reservation.domain.Inventory;
-import com.bkmarriott.reservationservice.reservation.domain.vo.RoomType;
+import com.bkmarriott.reservationservice.reservation.domain.vo.inventory.RoomType;
 import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.entity.RoomEntityType;
 import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.entity.RoomTypeInventoryEntity;
 import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.entity.RoomTypeInventoryId;

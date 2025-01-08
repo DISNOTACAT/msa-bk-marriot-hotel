@@ -1,16 +1,19 @@
 package com.bkmarriott.reservationservice.reservation.presentation.infrastructure.persistence.config;
 
-import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.adapter.InventoryCommandAdaptor;
-import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.adapter.InventoryQueryAdaptor;
+import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.adapter.inventory.InventoryCommandAdaptor;
+import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.adapter.inventory.InventoryQueryAdaptor;
 import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.repository.InventoryQueryDslRepository;
 import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.repository.InventoryRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.web.context.request.RequestContextListener;
 
 @EnableJpaAuditing
 @Configuration
@@ -39,5 +42,15 @@ public class PersistenceTestConfig {
   @Bean
   public InventoryCommandAdaptor inventoryCommandAdaptor(@Autowired InventoryRepository inventoryRepository) {
     return new InventoryCommandAdaptor(inventoryRepository);
+  }
+
+  @Bean
+  public AuditorAware<Long> auditorProvider() {
+    return () -> Optional.of(100000L);
+  }
+
+  @Bean
+  public RequestContextListener requestContextListener() {
+    return new RequestContextListener();
   }
 }

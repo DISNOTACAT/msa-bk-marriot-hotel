@@ -1,6 +1,6 @@
 package com.bkmarriott.reservationservice.reservation.infrastructure.persistence.entity;
 
-import com.bkmarriott.reservationservice.reservation.domain.vo.RoomType;
+import com.bkmarriott.reservationservice.reservation.domain.vo.inventory.RoomType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;

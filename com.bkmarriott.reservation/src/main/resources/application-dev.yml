@@ -7,14 +7,14 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: jdbc:mysql://localhost:3306/bkmarriot_db?serverTimezone=UTC &useLegacyDatetimeCode=false
+    username: team16
+    password: team16
 
   jpa:
     open-in-view: false
     hibernate:
-      ddl-auto: none
+      ddl-auto: create
     defer-datasource-initialization: true
     show-sql: true
     properties:
@@ -28,3 +28,8 @@ spring:
       mode: always
       schema-locations: classpath:schema.sql
       data-locations: classpath:data.sql
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:19090/eureka/

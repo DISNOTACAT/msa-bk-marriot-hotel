@@ -1,0 +1,38 @@
+server:
+  port: 19091
+
+spring:
+  main:
+    web-application-type: reactive
+  application:
+    name: gateway
+  cloud:
+    gateway:
+      routes:
+        - id: auth-service
+          uri: lb://reservation-service
+          predicates:
+            - Path=/api/v1/reservations/**
+        - id: hotel-service
+          uri: lb://hotel-service
+          predicates:
+            - Path=/api/v1/hotels/**
+        - id: charge-service
+          uri: lb://charge-service
+          predicates:
+            - Path=/api/v1/charges/**
+
+      discovery:
+        locator:
+          enabled: true
+
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:19090/eureka/
+
+logging:
+  level:
+    com.netflix.eureka: DEBUG
+    org.springframework.cloud.gateway: DEBUG

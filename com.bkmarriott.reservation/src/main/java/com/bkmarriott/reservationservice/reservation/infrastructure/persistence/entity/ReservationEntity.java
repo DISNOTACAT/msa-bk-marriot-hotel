@@ -1,6 +1,8 @@
 package com.bkmarriott.reservationservice.reservation.infrastructure.persistence.entity;
 
 import com.bkmarriott.reservationservice.reservation.domain.Reservation;
+import com.bkmarriott.reservationservice.reservation.domain.vo.reservation.ReservationForCreate;
+import com.bkmarriott.reservationservice.reservation.domain.vo.reservation.ReservationStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -10,11 +12,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "m_reservation")
 @Entity
 public class ReservationEntity extends BaseEntity {
@@ -55,6 +60,19 @@ public class ReservationEntity extends BaseEntity {
         endDate,
         roomType.toDomain(),
         status.toDomain());
+  }
+
+  public static ReservationEntity fromDomain(ReservationForCreate reservationForCreate) {
+    return new ReservationEntity(
+        null,
+        reservationForCreate.getUserId(),
+        reservationForCreate.getHotelId(),
+        null,
+        reservationForCreate.getStartDate(),
+        reservationForCreate.getEndDate(),
+        RoomEntityType.fromDomain(reservationForCreate.getRoomType()),
+        ReservationEntityStatus.fromDomain(reservationForCreate.getStatus())
+    );
   }
 
 

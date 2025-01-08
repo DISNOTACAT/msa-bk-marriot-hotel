@@ -2,7 +2,8 @@ package com.bkmarriott.reservationservice.reservation.presentation.rest.controll
 
 import com.bkmarriott.reservationservice.reservation.application.service.InventoryService;
 import com.bkmarriott.reservationservice.reservation.domain.Inventory;
-import com.bkmarriott.reservationservice.reservation.domain.vo.RoomType;
+import com.bkmarriott.reservationservice.reservation.domain.vo.inventory.RoomType;
+import com.bkmarriott.reservationservice.reservation.presentation.rest.controller.inventory.InventoryCommandController;
 import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;

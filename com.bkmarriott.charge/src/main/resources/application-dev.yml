@@ -1,0 +1,29 @@
+server:
+  port: 19040
+
+spring:
+  application:
+    name: charge-service
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/bkmarriot_db?serverTimezone=UTC &useLegacyDatetimeCode=false
+    username: team16
+    password: team16
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: false
+        default_batch_fetch_size: 1000
+        dialect: org.hibernate.dialect.MySQLDialect
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:19090/eureka/

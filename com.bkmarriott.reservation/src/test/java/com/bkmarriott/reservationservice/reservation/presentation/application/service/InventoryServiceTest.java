@@ -2,18 +2,18 @@ package com.bkmarriott.reservationservice.reservation.presentation.application.s
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.bkmarriott.reservationservice.reservation.application.dto.InventoryQueryRequestDto;
-import com.bkmarriott.reservationservice.reservation.application.dto.InventoryQueryResponseDto;
-import com.bkmarriott.reservationservice.reservation.application.exception.InventoryUpdateFailureException;
+import com.bkmarriott.reservationservice.reservation.application.dto.inventory.InventoryQueryRequestDto;
+import com.bkmarriott.reservationservice.reservation.application.dto.inventory.InventoryQueryResponseDto;
+import com.bkmarriott.reservationservice.reservation.application.exception.inventory.InventoryUpdateFailureException;
 import com.bkmarriott.reservationservice.reservation.application.exception.ResourceNotFoundException;
-import com.bkmarriott.reservationservice.reservation.application.outputport.InventoryCommandOutputPort;
-import com.bkmarriott.reservationservice.reservation.application.outputport.InventoryQueryOutputPort;
-import com.bkmarriott.reservationservice.reservation.application.outputport.ReservationQueryOutputPort;
+import com.bkmarriott.reservationservice.reservation.application.outputport.inventory.InventoryCommandOutputPort;
+import com.bkmarriott.reservationservice.reservation.application.outputport.inventory.InventoryQueryOutputPort;
+import com.bkmarriott.reservationservice.reservation.application.outputport.reservation.ReservationQueryOutputPort;
 import com.bkmarriott.reservationservice.reservation.application.service.InventoryService;
 import com.bkmarriott.reservationservice.reservation.domain.Inventory;
 import com.bkmarriott.reservationservice.reservation.domain.Reservation;
-import com.bkmarriott.reservationservice.reservation.domain.vo.ReservationStatus;
-import com.bkmarriott.reservationservice.reservation.domain.vo.RoomType;
+import com.bkmarriott.reservationservice.reservation.domain.vo.reservation.ReservationStatus;
+import com.bkmarriott.reservationservice.reservation.domain.vo.inventory.RoomType;
 import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.entity.RoomEntityType;
 import java.time.LocalDate;
 import java.util.List;

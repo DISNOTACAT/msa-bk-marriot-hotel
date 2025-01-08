@@ -1,7 +1,7 @@
 package com.bkmarriott.reservationservice.reservation.domain;
 
-import com.bkmarriott.reservationservice.reservation.domain.vo.ReservationStatus;
-import com.bkmarriott.reservationservice.reservation.domain.vo.RoomType;
+import com.bkmarriott.reservationservice.reservation.domain.vo.reservation.ReservationStatus;
+import com.bkmarriott.reservationservice.reservation.domain.vo.inventory.RoomType;
 import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,4 +19,5 @@ public class Reservation {
   private LocalDate endDate;
   private RoomType roomType;
   private ReservationStatus status;
+
 }

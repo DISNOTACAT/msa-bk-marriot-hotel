@@ -1,7 +1,9 @@
 package com.bkmarriott.reservationservice.reservation.domain;
 
-import com.bkmarriott.reservationservice.reservation.domain.vo.RoomType;
+import com.bkmarriott.reservationservice.reservation.domain.vo.inventory.RoomType;
+import com.bkmarriott.reservationservice.reservation.domain.vo.reservation.ReservationForCreate;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -45,5 +47,15 @@ public class Inventory {
   public static List<LocalDate> getDateRange(LocalDate startDate, LocalDate endDate) {
 
     return startDate.datesUntil(endDate).toList(); // endDate 제외
+  }
+
+  public static List<Inventory> of(Long hotelId, LocalDate startDate, LocalDate endDate, RoomType roomType) {
+    return getDateRange(startDate, endDate).stream()
+        .map(date -> Inventory.builder()
+            .hotelId(hotelId)
+            .date(date)
+            .roomType(roomType)
+            .build())
+        .toList();
   }
 }

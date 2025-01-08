@@ -1,6 +1,6 @@
 package com.bkmarriott.reservationservice.reservation.infrastructure.persistence.entity;
 
-import com.bkmarriott.reservationservice.reservation.application.exception.RoomTypeInventoryEntityException;
+import com.bkmarriott.reservationservice.reservation.application.exception.inventory.RoomTypeInventoryEntityException;
 import com.bkmarriott.reservationservice.reservation.domain.Inventory;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
@@ -26,7 +26,6 @@ public class RoomTypeInventoryEntity extends BaseEntity {
 
   @Column(name = "total_reserved", nullable = false)
   private int totalReserved;
-
 
   public Inventory toDomain() {
     return new Inventory(

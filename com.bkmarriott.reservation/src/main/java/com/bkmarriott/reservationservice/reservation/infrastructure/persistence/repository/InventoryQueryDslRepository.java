@@ -2,9 +2,9 @@ package com.bkmarriott.reservationservice.reservation.infrastructure.persistence
 
 import static com.bkmarriott.reservationservice.reservation.infrastructure.persistence.entity.QRoomTypeInventoryEntity.*;
 
-import com.bkmarriott.reservationservice.reservation.application.dto.InventoryQueryRequestDto;
-import com.bkmarriott.reservationservice.reservation.application.dto.InventoryQueryResponseDto;
-import com.bkmarriott.reservationservice.reservation.application.dto.QInventoryQueryResponseDto;
+import com.bkmarriott.reservationservice.reservation.application.dto.inventory.InventoryQueryRequestDto;
+import com.bkmarriott.reservationservice.reservation.application.dto.inventory.InventoryQueryResponseDto;
+import com.bkmarriott.reservationservice.reservation.application.dto.inventory.QInventoryQueryResponseDto;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class InventoryQueryDslRepository {
         )
         .from(roomTypeInventoryEntity)
         .where(roomTypeInventoryEntity.id.hotelId.eq(requestDto.getHotelId())
-            .and(roomTypeInventoryEntity.id.date.between(requestDto.getStartDate(), requestDto.getEndDate())))
+            .and(roomTypeInventoryEntity.id.date.between(requestDto.getStartDate(), requestDto.getEndDate().minusDays(1))))
         .groupBy(roomTypeInventoryEntity.id.roomType)
         .fetch();
   }
