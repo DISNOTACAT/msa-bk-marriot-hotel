@@ -37,8 +37,9 @@ public class ReservationService {
       // 동시성 테스트 필요 (현재 비관적락 적용)
       throw new NoRoomAvailable("예약가능한 잔여 객실이 없습니다.");
     }
+    // Feign 쿠폰 사용 요청
 
-    // 결제 요청
+    // Feign 결제 요청
 
     // 결제 응답 후, 객실 인벤토리 업데이트 요청
     // TODO: payment-service 생성 후 변경 필요
@@ -52,7 +53,7 @@ public class ReservationService {
     try {
       Reservation reservation = reservationCommandOutputPort.save(
           reservationForCreate);
-      log.info("[ReservationService] [createReservation] ::: 예약을 훌륭하게 성공했습니다. !!! ::: {}", reservation.getReservationId());
+      log.info("[ReservationService] [createReservation] reservationId ::: {}", reservation.getReservationId());
       return reservation;
     } catch (Exception e) {
       throw new RoomSaveFailure("객실 예약에 실패하였습니다.");

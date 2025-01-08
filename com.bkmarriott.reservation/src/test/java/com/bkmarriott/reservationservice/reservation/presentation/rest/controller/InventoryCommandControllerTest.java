@@ -1,21 +1,27 @@
 package com.bkmarriott.reservationservice.reservation.presentation.rest.controller;
 
+import static com.bkmarriott.reservationservice.reservation.presentation.config.HttpHeaderConstants.HEADER_USER_ID;
+
 import com.bkmarriott.reservationservice.reservation.application.service.InventoryService;
 import com.bkmarriott.reservationservice.reservation.domain.Inventory;
 import com.bkmarriott.reservationservice.reservation.domain.vo.inventory.RoomType;
 import com.bkmarriott.reservationservice.reservation.presentation.rest.controller.inventory.InventoryCommandController;
 import java.time.LocalDate;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 @WebMvcTest(InventoryCommandController.class)
 @DisplayName("[Presentation] InventoryCommandController Unit Test")
@@ -25,6 +31,14 @@ class InventoryCommandControllerTest {
   private MockMvc mockMvc;
   @MockitoBean
   private InventoryService inventoryService;
+
+  @BeforeEach
+  void setUp() {
+    MockHttpServletRequest request = new MockHttpServletRequest();
+    request.addHeader(HEADER_USER_ID, "1000");
+    RequestContextHolder.setRequestAttributes(
+        new ServletRequestAttributes(request));
+  }
 
   @Test
   @DisplayName("[인벤토리 업데이트 성공 테스트] 예약 아이디가 주어질 경우, 인벤토리 예약 객실 수를 증가 시킨다.")
@@ -47,6 +61,7 @@ class InventoryCommandControllerTest {
 
     //When
     mockMvc.perform(MockMvcRequestBuilders.patch(requestUrl)
+        .header(HEADER_USER_ID, "1000")
         .contentType(MediaType.APPLICATION_JSON))
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].hotelId").value(101))

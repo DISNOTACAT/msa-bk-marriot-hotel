@@ -25,8 +25,7 @@ public class InventoryCommandController {
 
   @PatchMapping
   public ResponseEntity<Success<List<Response>>> updateInventory(
-      @RequestParam Long reservationId,
-      @RequestHeader(HEADER_USER_ID) String userId
+      @RequestParam Long reservationId
   ) {
 
     List<Response> responseList = inventoryService.updateTotalReserved(reservationId)
