@@ -3,6 +3,7 @@ package com.bkmarriott.reservationservice.reservation.application.service;
 import com.bkmarriott.reservationservice.reservation.application.dto.inventory.InventoryQueryRequestDto;
 import com.bkmarriott.reservationservice.reservation.application.dto.inventory.InventoryQueryResponseDto;
 import com.bkmarriott.reservationservice.reservation.application.exception.inventory.InventoryUpdateFailureException;
+import com.bkmarriott.reservationservice.reservation.application.exception.reservation.NoRoomAvailable;
 import com.bkmarriott.reservationservice.reservation.application.outputport.inventory.InventoryCommandOutputPort;
 import com.bkmarriott.reservationservice.reservation.application.outputport.inventory.InventoryQueryOutputPort;
 import com.bkmarriott.reservationservice.reservation.application.outputport.reservation.ReservationQueryOutputPort;
@@ -28,7 +29,6 @@ public class InventoryService {
   private final InventoryQueryOutputPort inventoryQueryOutputPort;
   private final ReservationQueryOutputPort reservationQueryOutputPort;
 
-  // TODO: 예약과 응답 순서에 따른 변화 필요
   public List<Inventory> updateTotalReserved(Long reservationId) {
 
     Reservation reservation = reservationQueryOutputPort.findById(reservationId)
@@ -83,28 +83,23 @@ public class InventoryService {
     return availableRooms.stream().map(Response::from).toList();
   }
 
-  public InventoryQueryResponseDto getInventoryQuantityByRoomType(Long hotelId, LocalDate startDate, LocalDate endDate, RoomType roomType) {
+  // TODO: 예약결제 임시 메서드 추후 통합 또는 삭제 필요 -> 예약시 객실 조회 및 Lock
+  public int findAvailableRoomsWithPessimisticLock(Long hotelId, LocalDate startDate, LocalDate endDate, RoomType roomType) {
 
-    List<InventoryQueryResponseDto> availableRooms = inventoryQueryOutputPort
-        .findAvailableRoomsByHotelIdAndDateRange(new InventoryQueryRequestDto(
-            hotelId,startDate,endDate
+    int availableRooms = inventoryCommandOutputPort
+        .findAvailableRoomsWithPessimisticLock(new InventoryQueryRequestDto(
+            hotelId,startDate,endDate, roomType
         ));
 
-    if(availableRooms.isEmpty()) {
-      throw new ResourceNotFoundException("예약 가능 객실 수량 조회 결과가 없습니다.");
+    if(availableRooms == 0) {
+      throw new NoRoomAvailable("예약 가능한 잔여 객실이 없습니다.");
     }
 
-    for(InventoryQueryResponseDto availableRoom : availableRooms) {
-      if(availableRoom.getRoomType().equals(roomType)) {
-        return availableRoom;
-      }
-    }
+    log.info("[InventoryService] [find Available Room By RoomType] hotelId: {}, startDate: {}, endDate: {}, roomType: {}", hotelId, startDate, endDate, roomType);
+    return availableRooms;
 
-    log.warn("[InventoryService] [find Available Room By RoomType] hotelId: {}, startDate: {}, endDate: {}, roomType: {}", hotelId, startDate, endDate, roomType);
-    throw new IllegalArgumentException("해당 객실 타입의 예약 가능 수량 조회 실패");
   }
 
-  // TODO: 예약결제 임시 메서드 추후 통합 또는 삭제 필요
   public List<Inventory> increasePaidReserved(ReservationForCreate reservationForCreate) {
 
     try {
@@ -132,7 +127,5 @@ public class InventoryService {
           reservationForCreate.getHotelId(), reservationForCreate.getRoomType(), e);
       throw new InventoryUpdateFailureException("객실 예약 인벤토리 정보 수정 실패");
     }
-
   }
-
 }
