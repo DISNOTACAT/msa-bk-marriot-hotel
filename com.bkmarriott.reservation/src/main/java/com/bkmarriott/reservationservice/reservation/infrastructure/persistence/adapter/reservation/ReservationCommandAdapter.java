@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @RequiredArgsConstructor
 @Transactional
-public class ReservationCommandAdaptor implements ReservationCommandOutputPort {
+public class ReservationCommandAdapter implements ReservationCommandOutputPort {
 
   private final ReservationRepository reservationRepository;
 

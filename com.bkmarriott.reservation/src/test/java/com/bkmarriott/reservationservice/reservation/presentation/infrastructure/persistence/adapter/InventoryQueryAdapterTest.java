@@ -20,7 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @DisplayName("[Infrastructure] Inventory Repository Unit Test")
 @RepositoryTest
-class InventoryQueryAdaptorTest {
+class InventoryQueryAdapterTest {
 
   @Autowired
   private InventoryRepository inventoryRepository;

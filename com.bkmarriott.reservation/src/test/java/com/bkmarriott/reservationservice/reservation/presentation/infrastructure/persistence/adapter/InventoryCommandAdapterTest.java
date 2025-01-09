@@ -2,8 +2,8 @@ package com.bkmarriott.reservationservice.reservation.presentation.infrastructur
 
 import com.bkmarriott.reservationservice.reservation.domain.Inventory;
 import com.bkmarriott.reservationservice.reservation.domain.vo.inventory.RoomType;
-import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.adapter.inventory.InventoryCommandAdaptor;
-import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.adapter.inventory.InventoryQueryAdaptor;
+import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.adapter.inventory.InventoryCommandAdapter;
+import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.adapter.inventory.InventoryQueryAdapter;
 import com.bkmarriott.reservationservice.reservation.presentation.infrastructure.persistence.config.RepositoryTest;
 import java.time.LocalDate;
 import java.util.Optional;
@@ -14,12 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @DisplayName("[Infrastructure] Inventory Repository Unit Test")
 @RepositoryTest
-class InventoryCommandAdaptorTest {
+class InventoryCommandAdapterTest {
 
   @Autowired
-  private InventoryCommandAdaptor inventoryCommandAdaptor;
+  private InventoryCommandAdapter inventoryCommandAdapter;
   @Autowired
-  private InventoryQueryAdaptor inventoryQueryAdaptor;
+  private InventoryQueryAdapter inventoryQueryAdapter;
 
 
   @Test
@@ -30,7 +30,7 @@ class InventoryCommandAdaptorTest {
     LocalDate date = LocalDate.of(2025, 2, 1);
     RoomType roomType = RoomType.DELUXE;
     //When
-    Optional<Inventory> actual = inventoryQueryAdaptor.findById(hotelId, date, roomType);
+    Optional<Inventory> actual = inventoryQueryAdapter.findById(hotelId, date, roomType);
     //Then
     Assertions.assertAll(
         () -> Assertions.assertEquals(hotelId, actual.get().getHotelId()),
@@ -48,7 +48,7 @@ class InventoryCommandAdaptorTest {
     //Given
     Inventory inventory = testInventory();
     //When
-    Optional<Inventory> actual = inventoryCommandAdaptor.increaseReserved(inventory);
+    Optional<Inventory> actual = inventoryCommandAdapter.increaseReserved(inventory);
     //Then
     Assertions.assertAll(
         () -> Assertions.assertEquals(inventory.getHotelId(), actual.get().getHotelId()),
@@ -66,7 +66,7 @@ class InventoryCommandAdaptorTest {
     //Given
     Inventory inventory = testInventory();
     //When
-    Optional<Inventory> actual = inventoryCommandAdaptor.decreaseReserved(inventory);
+    Optional<Inventory> actual = inventoryCommandAdapter.decreaseReserved(inventory);
     //Then
     Assertions.assertAll(
         () -> Assertions.assertEquals(inventory.getHotelId(), actual.get().getHotelId()),

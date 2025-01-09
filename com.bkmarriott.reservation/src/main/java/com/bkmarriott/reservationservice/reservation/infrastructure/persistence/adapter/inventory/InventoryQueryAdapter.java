@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class InventoryQueryAdaptor implements InventoryQueryOutputPort {
+public class InventoryQueryAdapter implements InventoryQueryOutputPort {
 
   private final InventoryRepository inventoryRepository;
   private final InventoryQueryDslRepository inventoryQueryDslRepository;
@@ -36,5 +36,4 @@ public class InventoryQueryAdaptor implements InventoryQueryOutputPort {
       InventoryQueryRequestDto inventoryQueryRequestDto) {
     return inventoryQueryDslRepository.findAvailableRoomsByHotelIdAndDateRange(inventoryQueryRequestDto);
   }
-
 }
