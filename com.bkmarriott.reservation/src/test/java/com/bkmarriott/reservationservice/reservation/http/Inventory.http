@@ -3,14 +3,27 @@ PATCH http://localhost:19000/api/v1/reservations/inventories?reservationId=3
 Content-Type: application/json
 
 ### 검색 기간의 가능한 객실 수 조회 (여유분 10% 반영, 0개 값 조회 포함)
-GET http://localhost:19000/api/v1/reservations/inventories?
+GET http://localhost:19020/api/v1/reservations/inventories?
     hotelId=101&
     startDate=2025-02-01&
     endDate=2025-02-02
 Content-Type: application/json
 
 ###
-POST http://localhost:19000/api/v1/reservations?
+POST http://localhost:19020/api/v1/reservations?
+    userId=222
+Content-Type: application/json
+X-User-Id: 222
+
+{
+  "hotelId": 102,
+  "startDate": "2025-02-01",
+  "endDate": "2025-02-03",
+  "roomType": "STANDARD"
+}
+
+###
+POST http://localhost:19020/api/v1/reservations?
     userId=100
 Content-Type: application/json
 X-User-Id: 1
@@ -19,5 +32,7 @@ X-User-Id: 1
   "hotelId": 101,
   "startDate": "2025-02-01",
   "endDate": "2025-02-02",
-  "roomType": "STANDARD"
+  "roomType": "DELUXE",
+  "memberCouponId": 3
 }
+
