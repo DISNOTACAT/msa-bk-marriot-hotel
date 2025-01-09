@@ -14,21 +14,22 @@ public class UserCoupon {
     private LocalDateTime expiredAt;
     private Long version;
 
-    public UserCoupon(Long id, Coupon coupon, Long userId, LocalDateTime issuedAt, LocalDateTime spentAt,
-        LocalDateTime expiredAt, Long version) {
+    public UserCoupon(
+        Long id, Coupon coupon, Long userId,
+        LocalDateTime issuedAt, LocalDateTime spentAt, LocalDateTime expiredAt
+    ) {
         this.id = id;
         this.coupon = coupon;
         this.userId = userId;
         this.issuedAt = issuedAt;
         this.spentAt = spentAt;
         this.expiredAt = expiredAt;
-        this.version = version;
     }
 
     public static UserCoupon generateWithoutIdAndSpentAt(
         Coupon coupon, Long userId, LocalDateTime issuedAt, LocalDateTime expiredAt
     ) {
-        return new UserCoupon(null, coupon, userId, issuedAt, null, expiredAt, 1L);
+        return new UserCoupon(null, coupon, userId, issuedAt, null, expiredAt);
     }
 
     public UserCoupon updateSpentAt() {

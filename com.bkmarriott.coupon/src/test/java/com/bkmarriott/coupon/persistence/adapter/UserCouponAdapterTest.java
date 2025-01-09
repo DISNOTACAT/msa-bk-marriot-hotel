@@ -63,8 +63,7 @@ class UserCouponAdapterTest {
                 1234L,
                 LocalDateTime.of(2025, 1, 4, 0, 0, 0),
                 null,
-                LocalDateTime.of(2025, 1, 31, 0, 0, 0),
-                1L
+                LocalDateTime.of(2025, 1, 31, 0, 0, 0)
                 );
     }
 

@@ -19,12 +19,15 @@ public class CouponEventService {
 
     public UserCoupon issueCoupon(DomainEventEnvelop<CouponIssuanceEvent> envelop) {
         checkDuplicationEvent(envelop.getEventId());
-
         UserCouponForIssue userCouponForIssue = envelop.getEvent().toUserCouponForIssue();
-        return userCouponService.issueCoupon(userCouponForIssue);
+
+        UserCoupon userCoupon = userCouponService.issueCoupon(userCouponForIssue);
+        couponEventLogOutputPort.saveLog(envelop);
+
+        return userCoupon;
     }
 
-    public void checkDuplicationEvent(UUID eventId) {
+    private void checkDuplicationEvent(UUID eventId) {
         String eventLogId = String.valueOf(eventId);
         boolean isDuplicated = couponEventLogOutputPort.isExistedCouponLog(eventLogId);
         if (isDuplicated) {

@@ -17,7 +17,7 @@ public class CouponCommandPersistenceAdapter implements CouponOutputPort {
     private final CouponRepository couponRepository;
 
     public Optional<Coupon> findById(Long couponId) {
-        log.info("[CouponPersistenceAdapter] [findById] couponId ::: {}", couponId);
+        log.debug("[CouponPersistenceAdapter] [findById] couponId ::: {}", couponId);
         return couponRepository.findById(couponId)
             .map(CouponEntity::toDomain)
             .or(Optional::empty);

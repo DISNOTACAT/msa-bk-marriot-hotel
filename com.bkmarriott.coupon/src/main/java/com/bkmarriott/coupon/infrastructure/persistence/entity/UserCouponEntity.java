@@ -44,8 +44,10 @@ public class UserCouponEntity extends BaseEntity {
     @Column(nullable = false)
     private Long version;
 
-    public UserCouponEntity(Long id, CouponEntity coupon, Long userId, LocalDateTime issuanceAt,
-                              LocalDateTime spendingAt, LocalDateTime expiredAt, Long version) {
+    public UserCouponEntity(
+        Long id, CouponEntity coupon, Long userId, LocalDateTime issuanceAt,
+        LocalDateTime spendingAt, LocalDateTime expiredAt, Long version
+    ) {
         super.createdByUser(userId);
         this.id = id;
         this.coupon = coupon;
@@ -57,18 +59,18 @@ public class UserCouponEntity extends BaseEntity {
     }
 
     public UserCoupon toDomain() {
-        return new UserCoupon(id, coupon.toDomain(), userId, issuanceAt, spendingAt, expiredAt, version);
+        return new UserCoupon(id, coupon.toDomain(), userId, issuanceAt, spendingAt, expiredAt);
     }
 
     public static UserCouponEntity from(UserCoupon userCoupon) {
         return new UserCouponEntity(
-                userCoupon.getId(),
-                CouponEntity.from(userCoupon.getCoupon()),
-                userCoupon.getUserId(),
-                userCoupon.getIssuedAt(),
-                userCoupon.getSpentAt(),
-                userCoupon.getExpiredAt(),
-                userCoupon.getVersion()
+            userCoupon.getId(),
+            CouponEntity.from(userCoupon.getCoupon()),
+            userCoupon.getUserId(),
+            userCoupon.getIssuedAt(),
+            userCoupon.getSpentAt(),
+            userCoupon.getExpiredAt(),
+            0L
         );
     }
 

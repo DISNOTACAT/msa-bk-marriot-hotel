@@ -4,4 +4,5 @@ import com.bkmarriott.coupon.infrastructure.persistence.entity.CouponPolicyEntit
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CouponPolicyRepository extends JpaRepository<CouponPolicyEntity, Long> {
+
 }
