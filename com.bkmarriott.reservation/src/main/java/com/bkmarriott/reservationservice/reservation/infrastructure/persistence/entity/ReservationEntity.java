@@ -1,6 +1,7 @@
 package com.bkmarriott.reservationservice.reservation.infrastructure.persistence.entity;
 
 import com.bkmarriott.reservationservice.reservation.domain.Reservation;
+import com.bkmarriott.reservationservice.reservation.domain.vo.ReservationForCreate;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -10,11 +11,15 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
+
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "m_reservation")
 @Entity
 public class ReservationEntity extends BaseEntity {
@@ -54,8 +59,40 @@ public class ReservationEntity extends BaseEntity {
         startDate,
         endDate,
         roomType.toDomain(),
-        status.toDomain());
+        status.toDomain(),
+        roomId
+    );
   }
 
+  public static ReservationEntity from(ReservationForCreate reservationForCreate){
+    ReservationEntity reservation = new ReservationEntity(
+            null,
+            reservationForCreate.userId(),
+            reservationForCreate.hotelId(),
+            null,
+            reservationForCreate.startDate(),
+            reservationForCreate.endDate(),
+            RoomEntityType.fromDomain(reservationForCreate.roomType()),
+            ReservationEntityStatus.PENDING
+    );
+    reservation.createdBySystem(); //TODO 추후에 Auditing 자동처리
+    return reservation;
+  }
+  public static ReservationEntity from(Reservation reservation){
+    return new ReservationEntity(
+            reservation.getReservationId(),
+            reservation.getUserId(),
+            reservation.getHotelId(),
+            reservation.getRoomId(),
+            reservation.getStartDate(),
+            reservation.getEndDate(),
+            RoomEntityType.fromDomain(reservation.getRoomType()),
+            ReservationEntityStatus.fromDomain(reservation.getStatus())
+    );
+  }
+  public ReservationEntity updateStatus(ReservationEntityStatus status){
+    this.status = status;
+    return this;
+  }
 
 }

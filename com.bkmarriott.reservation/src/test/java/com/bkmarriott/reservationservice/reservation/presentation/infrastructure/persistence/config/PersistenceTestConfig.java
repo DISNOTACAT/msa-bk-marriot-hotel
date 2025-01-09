@@ -2,8 +2,10 @@ package com.bkmarriott.reservationservice.reservation.presentation.infrastructur
 
 import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.adapter.InventoryCommandAdaptor;
 import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.adapter.InventoryQueryAdaptor;
+import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.adapter.ReservationCommandAdapter;
 import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.repository.InventoryQueryDslRepository;
 import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.repository.InventoryRepository;
+import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.repository.ReservationRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,5 +41,10 @@ public class PersistenceTestConfig {
   @Bean
   public InventoryCommandAdaptor inventoryCommandAdaptor(@Autowired InventoryRepository inventoryRepository) {
     return new InventoryCommandAdaptor(inventoryRepository);
+  }
+
+  @Bean
+  public ReservationCommandAdapter reservationCommandAdapter(@Autowired ReservationRepository reservationRepository){
+    return new ReservationCommandAdapter(reservationRepository);
   }
 }

@@ -15,4 +15,7 @@ public enum ReservationEntityStatus {
     }
     throw new IllegalArgumentException("Invalid status: " + this.name());
   }
+  public static ReservationEntityStatus fromDomain(ReservationStatus reservationStatus) {
+    return ReservationEntityStatus.valueOf(reservationStatus.name());
+  }
 }

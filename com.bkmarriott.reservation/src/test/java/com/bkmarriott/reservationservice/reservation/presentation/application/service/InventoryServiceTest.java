@@ -53,7 +53,8 @@ class InventoryServiceTest {
         LocalDate.of(2025, 2, 1),
         LocalDate.of(2025, 2, 2),
         RoomType.DELUXE,
-        ReservationStatus.PAID
+        ReservationStatus.PAID,
+        null
     );
 
     Inventory mockInventory = Inventory.of(
@@ -94,7 +95,8 @@ class InventoryServiceTest {
         LocalDate.of(2025, 2, 1),
         LocalDate.of(2025, 2, 2),
         RoomType.DELUXE,
-        ReservationStatus.CANCELLED
+        ReservationStatus.CANCELLED,
+        null
     );
 
     Inventory mockInventory = Inventory.of(
@@ -203,7 +205,8 @@ class InventoryServiceTest {
         LocalDate.of(2025, 2, 1),
         LocalDate.of(2025, 2, 2),
         RoomType.DELUXE,
-        ReservationStatus.PAID
+        ReservationStatus.PAID,
+        null
     );
 
     Mockito.when(reservationQueryOutputPort.findById(reservationId))

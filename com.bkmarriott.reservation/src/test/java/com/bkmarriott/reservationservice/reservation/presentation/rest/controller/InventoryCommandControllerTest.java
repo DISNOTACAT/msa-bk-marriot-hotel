@@ -33,7 +33,7 @@ class InventoryCommandControllerTest {
 
     String requestUrl = "/api/v1/reservations/inventories?reservationId=" + reservationId;
 
-    Inventory increase = new Inventory(
+    Inventory increase =Inventory.of(
         101L,
         LocalDate.of(2025, 2, 1),
         RoomType.DELUXE,
