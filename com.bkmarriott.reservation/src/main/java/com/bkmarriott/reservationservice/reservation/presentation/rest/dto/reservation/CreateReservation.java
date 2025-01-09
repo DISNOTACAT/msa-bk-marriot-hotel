@@ -18,6 +18,8 @@ public class CreateReservation {
     private LocalDate startDate;
     private LocalDate endDate;
     private RoomType roomType;
+    private Long memberCouponId;
+    private int price;
 
     public ReservationForCreate toDomain(String userId) {
       return new ReservationForCreate(
@@ -25,7 +27,9 @@ public class CreateReservation {
           hotelId,
           startDate,
           endDate,
-          roomType
+          roomType,
+          memberCouponId,
+          price
       );
     }
   }
