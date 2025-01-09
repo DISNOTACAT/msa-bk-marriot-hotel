@@ -4,7 +4,7 @@ CREATE TABLE M_PAYMENT
 (
     ID         BIGINT AUTO_INCREMENT
         PRIMARY KEY,
-    RESERVATION_ID   BIGINT                                                        NOT NULL,
+    RESERVATION_ID   BIGINT                                                        NULL,
     ORIGINAL_PRICE   INT                                                           NOT NULL,
     FINAL_PRICE      INT                                                           NOT NULL,
     PAYMENT_TYPE     ENUM ('CARD', 'CASH')                                         NOT NULL,

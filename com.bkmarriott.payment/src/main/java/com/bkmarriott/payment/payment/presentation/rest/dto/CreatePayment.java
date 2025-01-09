@@ -12,7 +12,6 @@ public class CreatePayment {
   @AllArgsConstructor
   public static class Requset {
 
-    private Long reservationId;
     private int originalPrice;
     private PaymentType paymentType;
     private Long memberCouponId;
@@ -20,7 +19,7 @@ public class CreatePayment {
     public Payment toDomain() {
       return new Payment(
           null,
-          reservationId,
+          null,
           originalPrice,
           originalPrice,
           PaymentStatus.PENDING,
