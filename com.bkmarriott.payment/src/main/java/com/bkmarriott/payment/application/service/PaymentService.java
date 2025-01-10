@@ -25,18 +25,18 @@ public class PaymentService {
     payment.setPaid(transactionId);
     log.info("[PaymentService] [createPayment] transactionId ::: {}", transactionId);
     try {
-      return paymentCommandOutputPort.save(payment);
+      return paymentCommandOutputPort.save(payment, createPaymentDto.userId());
     } catch (Exception e) {
       log.debug("[PaymentService] [createPayment] paymentId ::: {}, exception ::: {}", transactionId, e.getMessage());
       throw new SavePaymentFailureException("결제 정보 생성에 실패하였습니다.");
     }
   }
 
-  public Payment refundPayment(Long paymentId) {
+  public Payment refundPayment(Long paymentId, Long userId) {
     Payment payment = paymentQueryOutputPort.findById(paymentId)
         .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 결제 정보"));
     log.info("[PaymentService] [refundPayment] Refund payment ::: {}", payment.getId());
-    return paymentCommandOutputPort.refund(paymentId);
+    return paymentCommandOutputPort.refund(paymentId, userId);
 
   }
 }

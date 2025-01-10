@@ -7,6 +7,7 @@ import com.bkmarriott.payment.presentation.rest.dto.PaymentRequestDto;
 
 public record CreatePaymentDto (
 
+  Long userId,
   Long reservationId,
   String cardNumber,
   String expiryDate,
@@ -17,8 +18,9 @@ public record CreatePaymentDto (
   PaymentStatus paymentStatus,
   PaymentType paymentType
 ) {
-  public static CreatePaymentDto from(PaymentRequestDto paymentRequest) {
+  public static CreatePaymentDto from(PaymentRequestDto paymentRequest, Long userId) {
     return new CreatePaymentDto(
+        userId,
         paymentRequest.reservationId(),
         paymentRequest.cardNumber(),
         paymentRequest.expiryDate(),

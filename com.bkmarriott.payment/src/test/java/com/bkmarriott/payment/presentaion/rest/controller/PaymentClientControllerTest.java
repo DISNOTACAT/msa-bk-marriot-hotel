@@ -65,7 +65,9 @@ class PaymentClientControllerTest {
     // When & Then
     mockMvc.perform(MockMvcRequestBuilders.post(requestUrl)
             .content(objectMapper.writeValueAsString(request))
-            .contentType(MediaType.APPLICATION_JSON))
+            .contentType(MediaType.APPLICATION_JSON)
+            .header("X-User-Id", 1L)
+            .header("X-Role", "CUSTOMER"))
         .andExpect(MockMvcResultMatchers.jsonPath("$.paymentId").value(payment.getId()))
         .andExpect(MockMvcResultMatchers.jsonPath("$.reservationId").value(payment.getReservationId()))
         .andExpect(MockMvcResultMatchers.jsonPath("$.originalPrice").value(payment.getOriginalPrice()))
@@ -92,13 +94,15 @@ class PaymentClientControllerTest {
         "TXN12345",
         1L
     );
-    Mockito.when(paymentService.refundPayment(Mockito.anyLong()))
+    Mockito.when(paymentService.refundPayment(Mockito.anyLong(), Mockito.anyLong()))
         .thenReturn(payment);
 
     // When & Then
     mockMvc.perform(MockMvcRequestBuilders.patch(requestUrl)
             .param("paymentId", paymentId)
-            .contentType(MediaType.APPLICATION_JSON))
+            .contentType(MediaType.APPLICATION_JSON)
+            .header("X-User-Id", 1L)
+            .header("X-Role", "CUSTOMER"))
         .andExpect(MockMvcResultMatchers.jsonPath("$.paymentId").value(payment.getId()))
         .andExpect(MockMvcResultMatchers.jsonPath("$.reservationId").value(payment.getReservationId()))
         .andExpect(MockMvcResultMatchers.jsonPath("$.originalPrice").value(payment.getOriginalPrice()))

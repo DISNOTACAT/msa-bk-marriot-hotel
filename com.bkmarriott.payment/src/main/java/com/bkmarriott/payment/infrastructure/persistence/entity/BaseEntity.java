@@ -14,7 +14,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Getter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public class BaseEntity {
+public abstract class BaseEntity {
 
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted;
@@ -41,5 +41,14 @@ public class BaseEntity {
     protected void createdBySystem() {
         this.createdBy = 0L;
         this.updatedBy = 0L;
+    }
+
+    protected void createdByUser(Long userId) {
+        this.createdBy = userId;
+        this.updatedBy = userId;
+    }
+
+    public void updatedByUser(Long userId) {
+        this.updatedBy = userId;
     }
 }

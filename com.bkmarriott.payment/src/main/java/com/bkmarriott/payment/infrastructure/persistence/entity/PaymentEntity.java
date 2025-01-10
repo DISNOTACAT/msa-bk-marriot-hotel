@@ -85,4 +85,14 @@ public class PaymentEntity extends BaseEntity {
     this.paymentStatus = PaymentEntityStatus.REFUNDED;
     return PaymentEntity.this;
   }
+
+  public PaymentEntity createByUser(Long userId) {
+    super.createdByUser(userId);
+    return PaymentEntity.this;
+  }
+
+  public PaymentEntity updateByUser(Long userId) {
+    super.updatedByUser(userId);
+    return PaymentEntity.this;
+  }
 }

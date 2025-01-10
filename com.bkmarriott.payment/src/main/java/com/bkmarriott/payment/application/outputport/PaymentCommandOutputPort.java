@@ -4,7 +4,7 @@ import com.bkmarriott.payment.domain.Payment;
 
 public interface PaymentCommandOutputPort {
 
-  Payment save(Payment payment);
+  Payment save(Payment payment, Long userId);
 
-  Payment refund(Long paymentId);
+  Payment refund(Long paymentId, Long userId);
 }

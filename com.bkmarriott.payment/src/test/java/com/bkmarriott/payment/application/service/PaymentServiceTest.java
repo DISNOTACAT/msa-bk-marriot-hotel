@@ -33,11 +33,14 @@ class PaymentServiceTest {
   @Mock
   private PaymentQueryOutputPort paymentQueryOutputPort;
 
+  private Long userId = 1L;
+
   @Test
   @DisplayName("[결제 정보 저장 성공 테스트] 예약 정보가 주어였을 시, 새로운 결제 정보를 저장한다.")
   void create_payment_successTest() {
     //given
     CreatePaymentDto mockDto = new CreatePaymentDto(
+        userId,
         123L,
         "123456789",
         "2030-01-31",
@@ -58,7 +61,9 @@ class PaymentServiceTest {
         "123123",
         3L
     );
-    Mockito.when(paymentCommandOutputPort.save(ArgumentMatchers.any(Payment.class)))
+    Mockito.when(paymentCommandOutputPort.save(
+        ArgumentMatchers.any(Payment.class),
+        ArgumentMatchers.anyLong()))
         .thenReturn(payment);
 
     //when
@@ -96,11 +101,13 @@ class PaymentServiceTest {
 
     Mockito.when(paymentQueryOutputPort.findById(ArgumentMatchers.anyLong()))
         .thenReturn(Optional.of(mockEntity.toDomain()));
-    Mockito.when(paymentCommandOutputPort.refund(ArgumentMatchers.anyLong()))
+    Mockito.when(paymentCommandOutputPort.refund(
+            ArgumentMatchers.anyLong(),
+            ArgumentMatchers.anyLong()))
         .thenReturn(payment);
 
     //when
-    Payment actual = paymentService.refundPayment(paymentId);
+    Payment actual = paymentService.refundPayment(paymentId, userId);
 
     //then
     Assertions.assertAll(
@@ -121,6 +128,7 @@ class PaymentServiceTest {
 
     // Given
     CreatePaymentDto createPaymentDto = new CreatePaymentDto(
+        userId,
         123L,
         "123456789",
         "2030-01-31",
@@ -132,7 +140,7 @@ class PaymentServiceTest {
         PaymentType.CARD
     );
 
-    Mockito.when(paymentCommandOutputPort.save(ArgumentMatchers.any(Payment.class)))
+    Mockito.when(paymentCommandOutputPort.save(ArgumentMatchers.any(Payment.class), ArgumentMatchers.anyLong()))
         .thenThrow(new SavePaymentFailureException("결제 정보 생성에 실패하였습니다."));
 
     // When & Then
@@ -150,7 +158,7 @@ class PaymentServiceTest {
         .thenReturn(Optional.empty());
 
     // When & Then
-    assertThatThrownBy(() -> paymentService.refundPayment(paymentId))
+    assertThatThrownBy(() -> paymentService.refundPayment(paymentId, userId))
         .isInstanceOf(ResourceNotFoundException.class)
         .hasMessage("존재하지 않는 결제 정보");
   }

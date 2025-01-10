@@ -17,14 +17,15 @@ public class PaymentCommandAdapter implements PaymentCommandOutputPort {
   private final PaymentRepository paymentRepository;
 
   @Override
-  public Payment save(Payment payment) {
-    return paymentRepository.save(PaymentEntity.from(payment)).toDomain();
+  public Payment save(Payment payment, Long userId) {
+    return paymentRepository.save(PaymentEntity.from(payment)
+        .createByUser(userId)).toDomain();
   }
 
   @Override
-  public Payment refund(Long paymentId) {
+  public Payment refund(Long paymentId, Long userId) {
     return paymentRepository.findById(paymentId)
         .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 결제 정보"))
-        .setRefunded().toDomain();
+        .setRefunded().updateByUser(userId).toDomain();
   }
 }

@@ -23,6 +23,8 @@ class PaymentAdaptorTest {
   @Autowired
   private PaymentRepository paymentRepository;
 
+  private Long userId = 1L;
+
 
   @Test
   @DisplayName("[결제 단일 조회 성공 테스트] 결제 아이디를 이용하여 결제 정보를 조회한다. ")
@@ -71,7 +73,7 @@ class PaymentAdaptorTest {
     );
 
     //When
-    Payment actual = paymentCommandAdapter.save(mock);
+    Payment actual = paymentCommandAdapter.save(mock, userId);
 
     //Then
     Assertions.assertAll(
@@ -102,7 +104,7 @@ class PaymentAdaptorTest {
     );
 
     //When
-    Payment actual = paymentCommandAdapter.refund(paymentId);
+    Payment actual = paymentCommandAdapter.refund(paymentId, userId);
 
     //Then
     Assertions.assertAll(
