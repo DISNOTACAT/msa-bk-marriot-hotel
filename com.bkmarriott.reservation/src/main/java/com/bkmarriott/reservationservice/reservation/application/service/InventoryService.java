@@ -1,18 +1,21 @@
 package com.bkmarriott.reservationservice.reservation.application.service;
 
+import com.bkmarriott.reservationservice.reservation.application.dto.AvailableInventoryWithChargeDto;
 import com.bkmarriott.reservationservice.reservation.application.dto.InventoryQueryRequestDto;
 import com.bkmarriott.reservationservice.reservation.application.dto.InventoryQueryResponseDto;
 import com.bkmarriott.reservationservice.reservation.application.exception.InventoryUpdateFailureException;
+import com.bkmarriott.reservationservice.reservation.application.exception.ResourceNotFoundException;
 import com.bkmarriott.reservationservice.reservation.application.outputport.InventoryCommandOutputPort;
 import com.bkmarriott.reservationservice.reservation.application.outputport.InventoryQueryOutputPort;
 import com.bkmarriott.reservationservice.reservation.application.outputport.ReservationQueryOutputPort;
+import com.bkmarriott.reservationservice.reservation.application.outputport.feign.ChargeOutputPort;
 import com.bkmarriott.reservationservice.reservation.domain.Inventory;
 import com.bkmarriott.reservationservice.reservation.domain.Reservation;
 import com.bkmarriott.reservationservice.reservation.domain.vo.InventoryQuery;
 import com.bkmarriott.reservationservice.reservation.domain.vo.ReservationStatus;
 import com.bkmarriott.reservationservice.reservation.presentation.rest.dto.query.InventoryQuery.Response;
-import com.bkmarriott.reservationservice.reservation.application.exception.ResourceNotFoundException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +29,7 @@ public class InventoryService {
   private final InventoryCommandOutputPort inventoryCommandOutputPort;
   private final InventoryQueryOutputPort inventoryQueryOutputPort;
   private final ReservationQueryOutputPort reservationQueryOutputPort;
+  private final ChargeOutputPort chargeOutputPort;
 
 
   public List<Inventory> updateTotalReserved(Long reservationId) {
@@ -80,7 +84,15 @@ public class InventoryService {
       throw new IllegalArgumentException("예약 가능 객실 수량 조회 결과가 없습니다.");
     }
 
-    return availableRooms.stream().map(Response::from).toList();
+    List<AvailableInventoryWithChargeDto> availableInventoryWithCharges = new ArrayList<>();
+
+    for(InventoryQueryResponseDto availableRoom : availableRooms) {
+      int charge = chargeOutputPort.getRoomCharge(hotelId, availableRoom.getRoomType(), startDate, endDate);
+      availableInventoryWithCharges.add(new AvailableInventoryWithChargeDto(availableRoom.getRoomType(), availableRoom.getQuantity(), charge));
+    }
+
+    return availableInventoryWithCharges.stream()
+        .map(Response::from).toList();
   }
 
   public int getAvailableRoomCount(InventoryQuery query) {

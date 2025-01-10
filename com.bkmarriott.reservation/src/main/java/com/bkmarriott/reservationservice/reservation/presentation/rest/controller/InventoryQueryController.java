@@ -1,7 +1,7 @@
 package com.bkmarriott.reservationservice.reservation.presentation.rest.controller;
 
 import com.bkmarriott.reservationservice.reservation.application.service.InventoryService;
-import com.bkmarriott.reservationservice.reservation.presentation.rest.dto.query.InventoryQuery.Response;
+import com.bkmarriott.reservationservice.reservation.presentation.rest.dto.query.InventoryQuery;
 import com.bkmarriott.reservationservice.reservation.presentation.rest.util.reponse.ApiResponse;
 import com.bkmarriott.reservationservice.reservation.presentation.rest.util.reponse.ApiResponse.Success;
 import java.time.LocalDate;
@@ -22,12 +22,12 @@ public class InventoryQueryController {
   private final InventoryService inventoryService;
 
   @GetMapping
-  public ResponseEntity<Success<List<Response>>> getInventoryQuantity(
+  public ResponseEntity<Success<List<InventoryQuery.Response>>> getInventoryQuantity(
       @RequestParam Long hotelId,
       @RequestParam LocalDate startDate,
       @RequestParam LocalDate endDate) {
 
-    List<Response> responseList = inventoryService.getInventoryQuantity(hotelId,startDate,endDate);
+    List<InventoryQuery.Response> responseList = inventoryService.getInventoryQuantity(hotelId,startDate,endDate);
 
     return ApiResponse.success(responseList, HttpStatus.OK);
   }
