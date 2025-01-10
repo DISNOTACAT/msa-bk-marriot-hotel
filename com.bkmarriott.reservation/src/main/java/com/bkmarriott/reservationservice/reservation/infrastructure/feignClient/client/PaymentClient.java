@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 @FeignClient(name="payment-service")
 public interface PaymentClient {
 
-    @PostMapping("/api/vi/payments")
+    @PostMapping("/api/v1/payments")
     PaymentDto processPayment(@RequestBody PaymentRequestDto dto);
 
-    @PostMapping("/api/vi/payments/refund/{paymentId}")
+    @PostMapping("/api/v1/payments/refund/{paymentId}")
     PaymentDto processRefund(@PathVariable Long paymentId);
 
 }
