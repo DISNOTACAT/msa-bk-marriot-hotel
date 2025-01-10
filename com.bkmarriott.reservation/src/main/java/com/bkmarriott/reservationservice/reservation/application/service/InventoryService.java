@@ -37,62 +37,51 @@ public class InventoryService {
     Reservation reservation = reservationQueryOutputPort.findById(reservationId)
         .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 예약 정보"));
 
-    try {
-
-      if (reservation.getStatus().equals(ReservationStatus.PAID)) {
-          log.debug("[InventoryService] [Increase totalReserved] hotelId ::: {}, roomtype ::: {}"
-              , reservation.getHotelId(), reservation.getRoomType());
-
-          return Inventory.from(reservation)
-              .stream()
-              .map(inventory -> inventoryCommandOutputPort.increaseReserved(inventory)
-                  .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 인벤토리 정보")))
-              .toList();
-        }
-
-      if (reservation.getStatus().equals(ReservationStatus.CANCELLED) || reservation.getStatus().equals(ReservationStatus.REFUNDED)) {
-        log.debug("[InventoryService] [Decrease totalReserved] hotelId ::: {}, roomtype ::: {}"
+    if (reservation.getStatus().equals(ReservationStatus.PAID)) {
+        log.debug("[InventoryService] [Increase totalReserved] hotelId ::: {}, roomtype ::: {}"
             , reservation.getHotelId(), reservation.getRoomType());
 
         return Inventory.from(reservation)
             .stream()
-            .map(inventory -> inventoryCommandOutputPort.decreaseReserved(inventory)
+            .map(inventory -> inventoryCommandOutputPort.increaseReserved(inventory)
                 .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 인벤토리 정보")))
             .toList();
-        }
+      }
 
-      throw new IllegalArgumentException("잘못된 예약 상태 정보");
+    if (reservation.getStatus().equals(ReservationStatus.CANCELLED) || reservation.getStatus().equals(ReservationStatus.REFUNDED)) {
+      log.debug("[InventoryService] [Decrease totalReserved] hotelId ::: {}, roomtype ::: {}"
+          , reservation.getHotelId(), reservation.getRoomType());
 
-    } catch (Exception e) {
-      log.error("[InventoryService] [updateTotalReserved] hotelId ::: {}, roomType ::: {}",
-          reservation.getHotelId(), reservation.getRoomType(), e);
-      throw new InventoryUpdateFailureException("객실 예약 인벤토리 정보 수정 실패");
-    }
+      return Inventory.from(reservation)
+          .stream()
+          .map(inventory -> inventoryCommandOutputPort.decreaseReserved(inventory)
+              .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 인벤토리 정보")))
+          .toList();
+      }
+
+    log.error("[InventoryService] [updateTotalReserved] hotelId ::: {}, roomType ::: {}",
+        reservation.getHotelId(), reservation.getRoomType());
+    throw new InventoryUpdateFailureException("객실 예약 인벤토리 정보 수정 실패");
 
   }
 
   public List<Response> getInventoryQuantity(Long hotelId, LocalDate startDate, LocalDate endDate) {
 
     List<InventoryQueryResponseDto> availableRooms = inventoryQueryOutputPort
-        .findAvailableRoomsByHotelIdAndDateRange(new InventoryQueryRequestDto(
-            hotelId,startDate,endDate
-        ));
+        .findAvailableRoomsByHotelIdAndDateRange(new InventoryQueryRequestDto(hotelId,startDate,endDate));
 
     if (availableRooms == null || availableRooms.isEmpty()) {
-      log.warn("[InventoryService] [find Available Rooms] hotelId: {}, startDate: {}, endDate: {}",
-          hotelId, startDate, endDate);
+      log.warn("[InventoryService] [find Available Rooms] hotelId: {}, startDate: {}, endDate: {}", hotelId, startDate, endDate);
       throw new IllegalArgumentException("예약 가능 객실 수량 조회 결과가 없습니다.");
     }
 
-    List<AvailableInventoryWithChargeDto> availableInventoryWithCharges = new ArrayList<>();
-
-    for(InventoryQueryResponseDto availableRoom : availableRooms) {
-      int charge = chargeOutputPort.getRoomCharge(hotelId, availableRoom.getRoomType(), startDate, endDate);
-      availableInventoryWithCharges.add(new AvailableInventoryWithChargeDto(availableRoom.getRoomType(), availableRoom.getQuantity(), charge));
-    }
-
-    return availableInventoryWithCharges.stream()
-        .map(Response::from).toList();
+    return availableRooms.stream()
+        .map(availableRoom -> {
+          int charge = chargeOutputPort.getRoomCharge(hotelId, availableRoom.getRoomType(), startDate, endDate);
+          return new AvailableInventoryWithChargeDto(availableRoom.getRoomType(), availableRoom.getQuantity(), charge);
+        })
+        .map(Response::from)
+        .toList();
   }
 
   public int getAvailableRoomCount(InventoryQuery query) {
