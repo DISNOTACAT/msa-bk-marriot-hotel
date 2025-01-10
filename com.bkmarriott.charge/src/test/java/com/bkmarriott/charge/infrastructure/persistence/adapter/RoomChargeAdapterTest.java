@@ -1,5 +1,6 @@
 package com.bkmarriott.charge.infrastructure.persistence.adapter;
 
+import com.bkmarriott.charge.domain.DefaultRoomCharge;
 import com.bkmarriott.charge.domain.RoomCharge;
 import com.bkmarriott.charge.domain.vo.RoomChargeForCreate;
 import com.bkmarriott.charge.domain.vo.RoomChargeId;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @DisplayName("[Infrastructure] RoomCharge Repository Unit Test")
@@ -36,13 +38,26 @@ class RoomChargeAdapterTest {
         );
     }
 
-    private RoomChargeForCreate genRoomChargeForCreate() {
-        Long hotelId = 1L;
-        RoomType roomType = RoomType.STANDARD;
-        LocalDate date = LocalDate.now();
-        Integer charge = 10000;
-
-        return RoomChargeForCreate.of(hotelId, roomType, date, charge);
+    @Test
+    @DisplayName("[객실 요금 벌크 등록 성공 테스트] 객실 요금을 벌크 생성한다.")
+    void bulkCreate_successTest() {
+        // Given
+        List<RoomChargeForCreate> roomChargeForCreateList = List.of(
+                RoomChargeForCreate.of(1L, RoomType.STANDARD, LocalDate.of(2025, 1, 1), 10000),
+                RoomChargeForCreate.of(1L, RoomType.DELUXE, LocalDate.of(2025, 1, 1), 20000),
+                RoomChargeForCreate.of(1L, RoomType.TWIN, LocalDate.of(2025, 1, 1), 30000),
+                RoomChargeForCreate.of(1L, RoomType.STANDARD, LocalDate.of(2025, 1, 2), 10000),
+                RoomChargeForCreate.of(1L, RoomType.DELUXE, LocalDate.of(2025, 1, 2), 20000),
+                RoomChargeForCreate.of(1L, RoomType.TWIN, LocalDate.of(2025, 1, 2), 30000),
+                RoomChargeForCreate.of(2L, RoomType.STANDARD, LocalDate.of(2025, 1, 1), 10000),
+                RoomChargeForCreate.of(2L, RoomType.DELUXE, LocalDate.of(2025, 1, 1), 20000),
+                RoomChargeForCreate.of(2L, RoomType.TWIN, LocalDate.of(2025, 1, 1), 30000),
+                RoomChargeForCreate.of(2L, RoomType.STANDARD, LocalDate.of(2025, 1, 2), 10000),
+                RoomChargeForCreate.of(2L, RoomType.DELUXE, LocalDate.of(2025, 1, 2), 20000),
+                RoomChargeForCreate.of(2L, RoomType.TWIN, LocalDate.of(2025, 1, 2), 30000)
+        );
+        // When & Then
+        Assertions.assertDoesNotThrow(() -> roomChargeAdapter.bulkCreate(roomChargeForCreateList));
     }
 
     @Test
@@ -75,5 +90,25 @@ class RoomChargeAdapterTest {
                 () -> Assertions.assertEquals(roomCharge.getId().date(), actual.getId().date()),
                 () -> Assertions.assertEquals(roomCharge.getCharge(), actual.getCharge())
         );
+    }
+
+    @Test
+    @DisplayName("[기본 객실 요금 조회 성공 테스트] 기본 객실 요금을 전부 조회한다.")
+    void findAllDefault_successTest() {
+        // When
+        List<DefaultRoomCharge> defaultRoomChargeList = roomChargeAdapter.findAllDefault();
+        // Then
+        Assertions.assertAll(
+                () -> Assertions.assertEquals(4, defaultRoomChargeList.size())
+        );
+    }
+
+    private RoomChargeForCreate genRoomChargeForCreate() {
+        Long hotelId = 1L;
+        RoomType roomType = RoomType.STANDARD;
+        LocalDate date = LocalDate.now();
+        Integer charge = 10000;
+
+        return RoomChargeForCreate.of(hotelId, roomType, date, charge);
     }
 }

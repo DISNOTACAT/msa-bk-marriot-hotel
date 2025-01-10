@@ -3,7 +3,10 @@ package com.bkmarriott.charge.application.service;
 import com.bkmarriott.charge.application.exception.RoomChargeDuplicatedException;
 import com.bkmarriott.charge.application.exception.RoomChargeErrorMessage;
 import com.bkmarriott.charge.application.exception.RoomChargeNotFoundException;
+import com.bkmarriott.charge.application.outputport.HotelTypeOutputPort;
 import com.bkmarriott.charge.application.outputport.RoomChargeOutputPort;
+import com.bkmarriott.charge.domain.DefaultRoomCharge;
+import com.bkmarriott.charge.domain.HotelType;
 import com.bkmarriott.charge.domain.RoomCharge;
 import com.bkmarriott.charge.domain.vo.RoomChargeForCreate;
 import com.bkmarriott.charge.domain.vo.RoomChargeId;
@@ -12,13 +15,11 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -31,6 +32,8 @@ class RoomChargeServiceTest {
     private RoomChargeService roomChargeService;
     @Mock
     private RoomChargeOutputPort roomChargeOutputPort;
+    @Mock
+    private HotelTypeOutputPort hotelTypeOutputPort;
 
     @Test
     @DisplayName("[객실 요금 생성 성공 테스트] 객실 요금 생성 후 객실 요금 정보를 반환한다.")
@@ -167,4 +170,42 @@ class RoomChargeServiceTest {
         );
     }
 
+    @Test
+    @DisplayName("[기본 객실 요금 생성 성공 테스트] 기본 객실 요금을 벌크 생성한다.")
+    void createAllNextDefaultCharge_successTest() {
+        // Given
+        List<DefaultRoomCharge> defaultRoomCharges = List.of(
+                new DefaultRoomCharge(RoomType.STANDARD, 10000),
+                new DefaultRoomCharge(RoomType.DELUXE, 20000)
+        );
+        List<HotelType> hotelTypes = List.of(
+                new HotelType(1L, RoomType.STANDARD),
+                new HotelType(2L, RoomType.DELUXE)
+        );
+        Mockito.when(roomChargeOutputPort.findAllDefault()).thenReturn(defaultRoomCharges);
+        Mockito.when(hotelTypeOutputPort.findAll()).thenReturn(hotelTypes);
+
+        // When
+        roomChargeService.createAllNextDefaultCharge();
+
+        // Then
+        ArgumentCaptor<List<RoomChargeForCreate>> captor = ArgumentCaptor.forClass(List.class);
+        Mockito.verify(roomChargeOutputPort).bulkCreate(captor.capture());
+
+        List<RoomChargeForCreate> capturedCharges = captor.getValue();
+        LocalDate expectedDate = LocalDate.now().plusMonths(3);
+
+        // Assert
+        Assertions.assertEquals(2, capturedCharges.size());
+
+        for (int i = 0; i < defaultRoomCharges.size(); i++) {
+            assertRoomCharge(capturedCharges.get(i), defaultRoomCharges.get(i), expectedDate);
+        }
+    }
+
+    private void assertRoomCharge(RoomChargeForCreate chargeForCreate, DefaultRoomCharge defaultRoomCHarge, LocalDate date) {
+        Assertions.assertEquals(defaultRoomCHarge.getRoomType(), chargeForCreate.id().roomType());
+        Assertions.assertEquals(date, chargeForCreate.id().date());
+        Assertions.assertEquals(defaultRoomCHarge.getCharge(), chargeForCreate.charge());
+    }
 }

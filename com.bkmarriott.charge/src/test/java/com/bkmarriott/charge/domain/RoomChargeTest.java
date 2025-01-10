@@ -30,4 +30,23 @@ class RoomChargeTest {
                 () -> Assertions.assertEquals(charge, roomCharge.getCharge())
         );
     }
+
+    @Test
+    @DisplayName("[RoomCharge 수정 성공 테스트] RoomCharge 도메인 객체를 수정한다.")
+    void updateRoomCharge_successTest() {
+        // Given
+        RoomCharge roomCharge = new RoomCharge(RoomChargeId.of(hotelId, roomType, date), charge);
+        Integer newCharge = 20000;
+
+        // When
+        roomCharge.updateCharge(newCharge);
+
+        // Then
+        Assertions.assertAll(
+                () -> Assertions.assertEquals(hotelId, roomCharge.getId().hotelId()),
+                () -> Assertions.assertEquals(roomType, roomCharge.getId().roomType()),
+                () -> Assertions.assertEquals(date, roomCharge.getId().date()),
+                () -> Assertions.assertEquals(newCharge, roomCharge.getCharge())
+        );
+    }
 }

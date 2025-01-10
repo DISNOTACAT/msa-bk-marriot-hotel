@@ -2,6 +2,7 @@ package com.bkmarriott.charge.infrastructure.persistence.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import org.hibernate.annotations.ColumnDefault;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -33,6 +34,7 @@ public abstract class BaseEntity {
 
     private LocalDateTime deletedAt;
 
+    @ColumnDefault("false")
     private Boolean isDeleted = false;
 
     public void delete(Long userId) {
