@@ -1,12 +1,22 @@
 package com.bkmarriott.reservationservice.reservation.application.service;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+
+import com.bkmarriott.reservationservice.reservation.application.dto.InventoryQueryResponseDto;
 import com.bkmarriott.reservationservice.reservation.application.exception.ResourceNotFoundException;
-import com.bkmarriott.reservationservice.reservation.application.outputport.InventoryCommandOutputPort;
 import com.bkmarriott.reservationservice.reservation.application.outputport.InventoryQueryOutputPort;
-import com.bkmarriott.reservationservice.reservation.application.outputport.ReservationQueryOutputPort;
+import com.bkmarriott.reservationservice.reservation.application.outputport.feign.ChargeOutputPort;
 import com.bkmarriott.reservationservice.reservation.domain.Inventory;
 import com.bkmarriott.reservationservice.reservation.domain.vo.InventoryQuery;
 import com.bkmarriott.reservationservice.reservation.domain.vo.RoomType;
+import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.entity.RoomEntityType;
+import com.bkmarriott.reservationservice.reservation.presentation.rest.dto.query.InventoryQuery.Response;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,19 +26,13 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 @ExtendWith(MockitoExtension.class)
 @DisplayName("[Application] InventoryService Unit test")
-public class InventoryServiceTest {
+class InventoryServiceTest {
     @InjectMocks private InventoryService inventoryService;
-    @Mock private InventoryCommandOutputPort inventoryCommandOutputPort;
-    @Mock private ReservationQueryOutputPort reservationQueryOutputPort;
     @Mock private InventoryQueryOutputPort inventoryQueryOutputPort;
+    @Mock private ChargeOutputPort chargeOutputPort;
+
 
     @Test
     @DisplayName("[예약 기간에 따른 Inventory 가용 객실 수 반환 성공 테스트] 예약 기간에 따라 가용 가능한 최소 객실 수를 반환한다.")
@@ -74,6 +78,36 @@ public class InventoryServiceTest {
                         .isInstanceOf(ResourceNotFoundException.class)
                         .hasMessage("해당 예약정보에 해당하는 객실 정보를 찾을 수 없습니다.")
         );
+    }
+
+    @Test
+    @DisplayName("[객실 수와 요금 반환 성공 테스트] 요청 기간의 객실 타입별 예약 가능 수와 금액을 반환한다.")
+    void get_InventoryQuantity_successTest(){
+        // Given
+        int charge = 100000;
+        Long hotelId = 1L;
+        LocalDate startDate = LocalDate.parse("2025-02-01");
+        LocalDate endDate = LocalDate.parse("2025-02-02");
+
+        InventoryQueryResponseDto room1 = new InventoryQueryResponseDto(RoomEntityType.STANDARD, 5);
+        InventoryQueryResponseDto room2 = new InventoryQueryResponseDto(RoomEntityType.DELUXE, 3);
+        List<InventoryQueryResponseDto> availableRooms = Arrays.asList(room1, room2);
+
+        Mockito.when(inventoryQueryOutputPort.findAvailableRoomsByHotelIdAndDateRange(
+            any())).thenReturn(availableRooms);
+        Mockito.when(chargeOutputPort.getRoomCharge(
+            anyLong(), any(RoomType.class), any(LocalDate.class), any(LocalDate.class)))
+            .thenReturn(charge);
+
+        // When
+        List<Response> actual = inventoryService.getInventoryQuantity(hotelId, startDate, endDate);
+
+        Assertions.assertAll(
+            () -> Assertions.assertEquals(2, actual.size()),
+            () -> Assertions.assertEquals(room1.getRoomType(), actual.get(0).getRoomType()),
+            () -> Assertions.assertEquals(charge, actual.get(0).getCharge())
+        );
+
     }
 
 }

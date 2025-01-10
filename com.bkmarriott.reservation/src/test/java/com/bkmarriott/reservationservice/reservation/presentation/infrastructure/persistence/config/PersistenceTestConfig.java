@@ -3,6 +3,7 @@ package com.bkmarriott.reservationservice.reservation.presentation.infrastructur
 import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.adapter.InventoryCommandAdaptor;
 import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.adapter.InventoryQueryAdaptor;
 import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.adapter.ReservationCommandAdapter;
+import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.adapter.ReservationQueryAdaptor;
 import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.repository.InventoryQueryDslRepository;
 import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.repository.InventoryRepository;
 import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.repository.ReservationRepository;
@@ -46,5 +47,10 @@ public class PersistenceTestConfig {
   @Bean
   public ReservationCommandAdapter reservationCommandAdapter(@Autowired ReservationRepository reservationRepository){
     return new ReservationCommandAdapter(reservationRepository);
+  }
+
+  @Bean
+  public ReservationQueryAdaptor reservationQueryAdaptor(@Autowired ReservationRepository reservationRepository){
+    return new ReservationQueryAdaptor(reservationRepository);
   }
 }
