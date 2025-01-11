@@ -40,9 +40,9 @@ class InventoryQueryControllerTest {
 
 
     List<Response> mockResponse = List.of(
-        new Response(RoomType.DELUXE, 2),
-        new Response(RoomType.STANDARD, 44),
-        new Response(RoomType.TWIN, 33)
+        new Response(RoomType.DELUXE, 2, 350000),
+        new Response(RoomType.STANDARD, 44, 220000),
+        new Response(RoomType.TWIN, 33, 300000)
     );
     Mockito.when(inventoryService.getInventoryQuantity(
             ArgumentMatchers.anyLong(),

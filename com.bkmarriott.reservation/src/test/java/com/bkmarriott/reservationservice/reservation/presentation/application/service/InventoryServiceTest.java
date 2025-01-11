@@ -49,7 +49,7 @@ class InventoryServiceTest {
     Reservation mockReservation = new Reservation(
         reservationId,
         1L,
-        101L,
+        1L,
         LocalDate.of(2025, 2, 1),
         LocalDate.of(2025, 2, 2),
         RoomType.DELUXE,
@@ -58,10 +58,10 @@ class InventoryServiceTest {
     );
 
     Inventory mockInventory = Inventory.of(
-    101L, LocalDate.of(2025, 2, 1), RoomType.DELUXE, 80, 78);
+    1L, LocalDate.of(2025, 2, 1), RoomType.DELUXE, 80, 78);
 
     Inventory increase = Inventory.of(
-        101L, LocalDate.of(2025, 2, 1), RoomType.DELUXE, 80, 79);
+        1L, LocalDate.of(2025, 2, 1), RoomType.DELUXE, 80, 79);
 
     Mockito.when(reservationQueryOutputPort.findById(reservationId))
         .thenReturn(Optional.of(mockReservation));
@@ -91,7 +91,7 @@ class InventoryServiceTest {
     Reservation mockReservation = new Reservation(
         reservationId,
         1L,
-        101L,
+        1L,
         LocalDate.of(2025, 2, 1),
         LocalDate.of(2025, 2, 2),
         RoomType.DELUXE,
@@ -100,10 +100,51 @@ class InventoryServiceTest {
     );
 
     Inventory mockInventory = Inventory.of(
-        101L, LocalDate.of(2025, 2, 1), RoomType.DELUXE, 80, 78);
+        1L, LocalDate.of(2025, 2, 1), RoomType.DELUXE, 80, 78);
 
     Inventory decrease = Inventory.of(
-        101L, LocalDate.of(2025, 2, 1), RoomType.DELUXE, 80, 77);
+        1L, LocalDate.of(2025, 2, 1), RoomType.DELUXE, 80, 77);
+
+    Mockito.when(reservationQueryOutputPort.findById(reservationId))
+        .thenReturn(Optional.of(mockReservation));
+    Mockito.when(inventoryCommandOutputPort.decreaseReserved(Mockito.any(Inventory.class)))
+        .thenReturn(Optional.of(decrease));
+
+    //When
+    List<Inventory> actual =  inventoryService.updateTotalReserved(reservationId);
+
+    //Then
+    Assertions.assertAll(
+        () -> Assertions.assertEquals(actual.size(), 1),
+        () -> Assertions.assertEquals(actual.get(0).getHotelId(), mockInventory.getHotelId()),
+        () -> Assertions.assertEquals(actual.get(0).getDate(), mockInventory.getDate()),
+        () -> Assertions.assertEquals(actual.get(0).getRoomType(), mockInventory.getRoomType()),
+        () -> Assertions.assertEquals(actual.get(0).getTotalInventory(), mockInventory.getTotalInventory()),
+        () -> Assertions.assertEquals(actual.get(0).getTotalReserved(), mockInventory.getTotalReserved() - 1)
+    );
+  }
+
+  @Test
+  @DisplayName("[인벤토리 예약 객실 감소 성공 테스트] REFUNDED 예약 아이디가 주어졌을 시, 예약 기간 객실 수를 감소시킨 후 도메인 리스트를 반환한다.")
+  void update_decrease_refunded_successTest() {
+    //Given
+    Long reservationId = 1L;
+    Reservation mockReservation = new Reservation(
+        reservationId,
+        1L,
+        1L,
+        LocalDate.of(2025, 2, 1),
+        LocalDate.of(2025, 2, 2),
+        RoomType.DELUXE,
+        ReservationStatus.REFUNDED,
+        null
+    );
+
+    Inventory mockInventory = Inventory.of(
+        1L, LocalDate.of(2025, 2, 1), RoomType.DELUXE, 80, 78);
+
+    Inventory decrease = Inventory.of(
+        1L, LocalDate.of(2025, 2, 1), RoomType.DELUXE, 80, 77);
 
     Mockito.when(reservationQueryOutputPort.findById(reservationId))
         .thenReturn(Optional.of(mockReservation));
@@ -129,7 +170,7 @@ class InventoryServiceTest {
   @DisplayName("[인벤토리 예약 객실 수정 실패 테스트] 존재하지 않는 예약 아이디가 주어진 경우 예외를 발생시킨다.")
   void update_FailureTest() {
     //Given
-    Long reservationId = 101L;
+    Long reservationId = 1L;
 
     Mockito.when(reservationQueryOutputPort.findById(reservationId))
         .thenReturn(Optional.empty());
@@ -147,7 +188,7 @@ class InventoryServiceTest {
   @DisplayName("[인벤토리 예약 가능 객실 수 조회 성공 테스트] 호텔 아이디와 숙박 일자가 주어졌을 시, 예약 가능한 타입별 객실 수를 반환한다.")
   void get_inventory_quantity_SuccessTest() {
 
-    Long hotelId = 101L;
+    Long hotelId = 1L;
     LocalDate startDate = LocalDate.of(2025, 2, 1);
     LocalDate endDate = LocalDate.of(2025, 2, 2);
 
@@ -194,6 +235,27 @@ class InventoryServiceTest {
   }
 
   @Test
+  @DisplayName("[인벤토리 예약 가능 객실 수 조회 실패 테스트] 조회된 객실이 없는 경우 예외를 발생시킨다.")
+  void get_inventory_quantity_isEmpty_FailureTest() {
+    Long hotelId = 11L;
+    LocalDate startDate = LocalDate.of(2025, 2, 1);
+    LocalDate endDate = LocalDate.of(2025, 2, 2);
+
+    Mockito.when(
+            inventoryQueryOutputPort.findAvailableRoomsByHotelIdAndDateRange(
+                ArgumentMatchers.any(InventoryQueryRequestDto.class)))
+        .thenReturn(List.of());
+
+    // Given & When & Then
+    Assertions.assertAll(
+        () -> assertThatThrownBy(
+            () -> inventoryService.getInventoryQuantity(hotelId, startDate, endDate))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("예약 가능 객실 수량 조회 결과가 없습니다.")
+    );
+  }
+
+  @Test
   @DisplayName("[인벤토리 예약 객실 수정 실패 테스트] 예기치 못한 예외 발생 시 InventoryUpdateFailureException이 발생한다.")
   void update_increase_failureTest_dueToUnexpectedError() {
     // Given
@@ -201,7 +263,7 @@ class InventoryServiceTest {
     Reservation mockReservation = new Reservation(
         reservationId,
         1L,
-        101L,
+        1L,
         LocalDate.of(2025, 2, 1),
         LocalDate.of(2025, 2, 2),
         RoomType.DELUXE,
@@ -213,13 +275,82 @@ class InventoryServiceTest {
         .thenReturn(Optional.of(mockReservation));
 
     Mockito.when(inventoryCommandOutputPort.increaseReserved(Mockito.any(Inventory.class)))
-        .thenThrow(new RuntimeException("예기치 못한 오류"));
+        .thenThrow(new InventoryUpdateFailureException("객실 예약 인벤토리 정보 수정 실패"));
 
     // When & Then
     Assertions.assertAll(
         () -> assertThatThrownBy(() -> inventoryService.updateTotalReserved(reservationId))
             .isInstanceOf(InventoryUpdateFailureException.class)
             .hasMessage("객실 예약 인벤토리 정보 수정 실패")
+    );
+  }
+
+  @Test
+  @DisplayName("[인벤토리 예약 객실 수정 실패 테스트] 업데이트 조건이 아닌 경우 InventoryUpdateFailureException이 발생한다.")
+  void update__failureTest_dueToUnexpectedError() {
+    // Given
+    Long reservationId = 1L;
+    Reservation mockReservation = new Reservation(
+        reservationId,
+        1L,
+        1L,
+        LocalDate.of(2025, 2, 1),
+        LocalDate.of(2025, 2, 2),
+        RoomType.DELUXE,
+        ReservationStatus.PENDING,
+        null
+    );
+
+    Mockito.when(reservationQueryOutputPort.findById(reservationId))
+        .thenReturn(Optional.of(mockReservation));
+
+    // When & Then
+    Assertions.assertAll(
+        () -> assertThatThrownBy(() -> inventoryService.updateTotalReserved(reservationId))
+            .isInstanceOf(InventoryUpdateFailureException.class)
+            .hasMessage("객실 예약 인벤토리 정보 수정 실패")
+    );
+  }
+
+  @Test
+  @DisplayName("[인벤토리 예약 객실 수정 실패 테스트] PAID 예약이 주어졌지만 존재하지 않는 인벤토리의 경우 ResourceNotFoundException가 발생한다.")
+  void update__failureTest_dueToPAIDNotFound() {
+    // Given
+    Long reservationId = 1L;
+    Reservation reservation = new Reservation(reservationId, 1L, 1L, LocalDate.of(2025, 2, 1), LocalDate.of(2025, 2, 2), RoomType.DELUXE, ReservationStatus.PAID, null);
+
+    Mockito.when(reservationQueryOutputPort.findById(reservationId))
+    .thenReturn(Optional.of(reservation));
+
+    Mockito.when(inventoryCommandOutputPort.increaseReserved(ArgumentMatchers.any(Inventory.class)))
+        .thenReturn(Optional.empty());
+
+    // When & Then
+    Assertions.assertAll(
+        () -> assertThatThrownBy(() -> inventoryService.updateTotalReserved(reservationId))
+            .isInstanceOf(ResourceNotFoundException.class)
+            .hasMessage("존재하지 않는 인벤토리 정보")
+    );
+  }
+
+  @Test
+  @DisplayName("[인벤토리 예약 객실 수정 실패 테스트] CANCELLED 예약이 주어졌지만 존재하지 않는 인벤토리의 경우 ResourceNotFoundException가 발생한다.")
+  void update__failureTest_dueToCANCELLEDNotFound() {
+    // Given
+    Long reservationId = 1L;
+    Reservation reservation = new Reservation(reservationId, 1L, 1L, LocalDate.of(2025, 2, 1), LocalDate.of(2025, 2, 2), RoomType.DELUXE, ReservationStatus.CANCELLED, null);
+
+    Mockito.when(reservationQueryOutputPort.findById(reservationId))
+        .thenReturn(Optional.of(reservation));
+
+    Mockito.when(inventoryCommandOutputPort.decreaseReserved(ArgumentMatchers.any(Inventory.class)))
+        .thenReturn(Optional.empty());
+
+    // When & Then
+    Assertions.assertAll(
+        () -> assertThatThrownBy(() -> inventoryService.updateTotalReserved(reservationId))
+            .isInstanceOf(ResourceNotFoundException.class)
+            .hasMessage("존재하지 않는 인벤토리 정보")
     );
   }
 }
