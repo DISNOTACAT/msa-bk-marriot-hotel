@@ -3,12 +3,13 @@ package com.bkmarriott.coupon.infrastructure.persistence.adapter;
 import com.bkmarriott.coupon.application.outputport.UserCouponOutputPort;
 import com.bkmarriott.coupon.domain.UserCoupon;
 import com.bkmarriott.coupon.infrastructure.persistence.entity.UserCouponEntity;
+import com.bkmarriott.coupon.infrastructure.persistence.exception.CouponNotSpentException;
 import com.bkmarriott.coupon.infrastructure.persistence.repository.UserCouponRepository;
-import com.bkmarriott.coupon.presentation.rest.exception.UserCouponNotFoundException;
+import com.bkmarriott.coupon.infrastructure.persistence.exception.UserCouponNotFoundException;
 import java.time.LocalDateTime;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,5 +54,28 @@ public class UserCouponCommandPersistenceAdapter implements UserCouponOutputPort
         userCouponEntity = userCouponRepository.save(userCouponEntity);
 
         return userCouponEntity.toDomain();
+    }
+
+    @Override
+    @Transactional
+    public UserCoupon cancelUserCouponUsage(UserCoupon userCoupon) {
+        log.info("[UserCouponCommandPersistenceAdapter] [cancelUserCouponUsage] couponId ::: {}", userCoupon.getId());
+
+        UserCouponEntity userCouponEntity = userCouponRepository.findById(userCoupon.getId())
+                .orElseThrow(UserCouponNotFoundException::new);
+
+        userCouponEntity = userCouponEntity.updateSpentAt(userCoupon);
+        userCouponEntity = userCouponRepository.save(userCouponEntity);
+
+        return userCouponEntity.toDomain();
+    }
+
+    @Override
+    public UserCoupon findById(Long id) {
+        log.info("[UserCouponCommandPersistenceAdapter] [findById] couponId ::: {}", id);
+
+        return userCouponRepository.findById(id)
+                .map(UserCouponEntity::toDomain)
+                .orElseThrow(UserCouponNotFoundException::new);
     }
 }

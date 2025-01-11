@@ -22,4 +22,10 @@ public class CouponCommandController {
         UserCoupon userCoupon = userCouponService.useUserCoupon(id);
         return ResponseEntity.ok(PatchUserCouponResponse.from(userCoupon));
     }
+
+    @PatchMapping("/user-coupons/fail/{id}")
+    public ResponseEntity<PatchUserCouponResponse> cancelUserCouponUsage(@PathVariable Long id) {
+        UserCoupon userCoupon = userCouponService.cancelUserCouponUsage(id);
+        return ResponseEntity.ok(PatchUserCouponResponse.from(userCoupon));
+    }
 }
