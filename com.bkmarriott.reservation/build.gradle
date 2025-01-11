@@ -38,6 +38,7 @@ dependencies {
     implementation 'io.github.openfeign:feign-okhttp:11.8'
     implementation 'io.github.resilience4j:resilience4j-spring-boot3:2.2.0'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
@@ -84,6 +85,7 @@ jacocoTestReport {
                     "**/entity/*",
                     "**/util/*",
                     "**/reservation/presentation/rest/dto/*",
+                    "**/infrastructure/cache/*",
                     "**/ReservationApplication.class"])
         }))
     }
@@ -110,7 +112,7 @@ jacocoTestCoverageVerification {
             }
 
             excludes = ["*.*Config", "*.*Entity*", "*.*Application", "*.dto.*",
-                        "*.util.*", "*.exception.*", "*.*Query*"
+                        "*.util.*", "*.exception.*", "*.*Query*", "*.infrastructure.cache.*"
             ]
         }
     }

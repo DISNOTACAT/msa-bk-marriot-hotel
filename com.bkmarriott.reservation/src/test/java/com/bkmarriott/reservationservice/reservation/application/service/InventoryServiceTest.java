@@ -7,6 +7,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import com.bkmarriott.reservationservice.reservation.application.dto.InventoryQueryResponseDto;
 import com.bkmarriott.reservationservice.reservation.application.exception.ResourceNotFoundException;
 import com.bkmarriott.reservationservice.reservation.application.outputport.InventoryQueryOutputPort;
+import com.bkmarriott.reservationservice.reservation.application.outputport.cache.InventoryCacheOutputPort;
 import com.bkmarriott.reservationservice.reservation.application.outputport.feign.ChargeOutputPort;
 import com.bkmarriott.reservationservice.reservation.domain.Inventory;
 import com.bkmarriott.reservationservice.reservation.domain.vo.InventoryQuery;
@@ -33,10 +34,11 @@ class InventoryServiceTest {
     @Mock private InventoryQueryOutputPort inventoryQueryOutputPort;
     @Mock private ChargeOutputPort chargeOutputPort;
 
+    @Mock private InventoryCacheOutputPort inventoryCacheOutputPort;
 
     @Test
-    @DisplayName("[예약 기간에 따른 Inventory 가용 객실 수 반환 성공 테스트] 예약 기간에 따라 가용 가능한 최소 객실 수를 반환한다.")
-    void getAvailableRoomCount_successTest(){
+    @DisplayName("[예약 기간에 따른 Inventory 가용 객실 수 반환 성공 테스트] 예약 기간에 따라 가용 가능하다면 예외를 터뜨리지 않는다.")
+    void prepareAvailableRoom_successTest(){
         // Given
         InventoryQuery query = new InventoryQuery(101L, LocalDate.parse("2025-02-01"), LocalDate.parse("2025-02-03"), RoomType.DELUXE);
         int idx = 0;
@@ -51,21 +53,19 @@ class InventoryServiceTest {
             minAvailableCnt = Math.min(minAvailableCnt, totalInventory-totalReserved[idx]);
             inventories.add(Inventory.of(query.hotelId(), date, query.roomType(), 80, totalReserved[idx++]));
         }
-        int expectedRoomCount = minAvailableCnt;
 
         Mockito.when(inventoryQueryOutputPort.findInventoryFromReservation(query)).thenReturn(inventories);
+        Mockito.doNothing().when(inventoryCacheOutputPort).decreaseRoomCount(query);
 
-        // When
-        int availableRoomCount = inventoryService.getAvailableRoomCount(query);
-
-        Assertions.assertAll(
-                () -> Assertions.assertEquals(expectedRoomCount, availableRoomCount)
-        );
+        // When & Then
+        Assertions.assertDoesNotThrow(() -> inventoryService.prepareAvailableRoom(query));
+        Mockito.verify(inventoryQueryOutputPort, Mockito.times(1)).findInventoryFromReservation(query);
+        Mockito.verify(inventoryCacheOutputPort, Mockito.times(1)).decreaseRoomCount(query);
     }
 
     @Test
     @DisplayName("[예약 기간에 따른 Inventory 가용 객실 수 반환 실패 테스트] 예약정보에 해당하는 객실 정보가 없다면 예외 발생")
-    void getAvailableRoomCount_failTest(){
+    void prepareAvailableRoom_failTest(){
         // Given
         InventoryQuery query = new InventoryQuery(101L, LocalDate.parse("2025-02-01"), LocalDate.parse("2025-02-03"), RoomType.DELUXE);
 
@@ -74,7 +74,7 @@ class InventoryServiceTest {
 
         // When & Then
         Assertions.assertAll(
-                () -> assertThatThrownBy(() -> inventoryService.getAvailableRoomCount(query))
+                () -> assertThatThrownBy(() -> inventoryService.prepareAvailableRoom(query))
                         .isInstanceOf(ResourceNotFoundException.class)
                         .hasMessage("해당 예약정보에 해당하는 객실 정보를 찾을 수 없습니다.")
         );
