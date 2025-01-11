@@ -8,6 +8,8 @@ import com.bkmarriott.coupon.infrastructure.persistence.adapter.UserCouponComman
 import com.bkmarriott.coupon.infrastructure.persistence.adapter.UserCouponQueryAdapter;
 import com.bkmarriott.coupon.infrastructure.persistence.entity.CouponEntity;
 import com.bkmarriott.coupon.infrastructure.persistence.entity.CouponPolicyEntity;
+import com.bkmarriott.coupon.infrastructure.persistence.exception.CouponNotSpentException;
+import com.bkmarriott.coupon.infrastructure.persistence.exception.UserCouponNotFoundException;
 import com.bkmarriott.coupon.infrastructure.persistence.repository.CouponPolicyRepository;
 import com.bkmarriott.coupon.infrastructure.persistence.repository.CouponRepository;
 import com.bkmarriott.coupon.persistence.config.RepositoryTest;
@@ -39,7 +41,7 @@ class UserCouponAdapterTest {
     @DisplayName("[성공] 유효한 쿠폰 조회 테스트 - 쿠폰 아이디로 기간이 유효하고 미사용인 쿠폰이 있으면 반환")
     void getValidUserCoupon_successTest() {
         // Given
-        UserCoupon userCoupon = generateTestUserCoupon();
+        UserCoupon userCoupon = generateTestUserCoupon(null);
 
         // When
         UserCoupon generatedCoupon = userCouponCommandAdapter.generateUserCoupon(userCoupon);
@@ -55,14 +57,26 @@ class UserCouponAdapterTest {
         );
     }
 
-    private UserCoupon generateTestUserCoupon() {
+    private UserCoupon generateTestUserCoupon(Long userCouponId) {
+        // Test (2024.01.04 11:55:00) 시점에서 유효한 테스트 쿠폰 발급
+        return new UserCoupon(
+                userCouponId,
+                generateTestCoupon(),
+                1234L,
+                LocalDateTime.of(2025, 1, 4, 0, 0, 0),
+                null,
+                LocalDateTime.of(2025, 1, 31, 0, 0, 0)
+                );
+    }
+
+    private UserCoupon generateTestUsedUserCoupon() {
         // Test (2024.01.04 11:55:00) 시점에서 유효한 테스트 쿠폰 발급
         return new UserCoupon(
                 null,
                 generateTestCoupon(),
                 1234L,
                 LocalDateTime.of(2025, 1, 4, 0, 0, 0),
-                null,
+                LocalDateTime.of(2025, 1, 8, 0, 0, 0),
                 LocalDateTime.of(2025, 1, 31, 0, 0, 0)
                 );
     }
@@ -96,7 +110,7 @@ class UserCouponAdapterTest {
     @DisplayName("[성공] 사용자 쿠폰 사용 테스트 - 사용자가 요청해서 사용 가능한 쿠폰 조회 가능하면 사용 처리 업데이트")
     void useUserCoupon_successTest() {
         // Given
-        UserCoupon testUserCoupon = generateTestUserCoupon();
+        UserCoupon testUserCoupon = generateTestUserCoupon(null);
         UserCoupon userCoupon = userCouponCommandAdapter.generateUserCoupon(testUserCoupon);
 
         // When
@@ -106,6 +120,36 @@ class UserCouponAdapterTest {
         // Then
         Assertions.assertAll(
                 () -> Assertions.assertNotNull(actual.getSpentAt())
+        );
+    }
+
+    @Test
+    @DisplayName("[성공] 사용자 쿠폰 사용 롤백 테스트 - 사용자 쿠폰 롤백 요청이 들어오면 사용 취소 처리")
+    void cancelUserCoupon_successTest() {
+        // Given
+        UserCoupon testUserCoupon = generateTestUsedUserCoupon();
+        UserCoupon userCoupon = userCouponCommandAdapter.generateUserCoupon(testUserCoupon);
+        userCoupon.deleteSpentAt();
+
+        // When
+        UserCoupon actual = userCouponCommandAdapter.cancelUserCouponUsage(userCoupon);
+
+        // Then
+        Assertions.assertAll(
+                () -> Assertions.assertNull(actual.getSpentAt())
+        );
+    }
+
+    @Test
+    @DisplayName("[실패] 사용자 쿠폰 사용 롤백 테스트 - 조회 불가능한 쿠폰 예외 처리")
+    void cancelUserCoupon_failureTest() {
+        // Given
+        UserCoupon testUserCoupon = generateTestUserCoupon(1L); // DB에 저장 안 한 쿠폰
+
+        // When & Then
+        Assertions.assertThrows(
+                UserCouponNotFoundException.class,
+                () -> userCouponCommandAdapter.cancelUserCouponUsage(testUserCoupon)
         );
     }
 }

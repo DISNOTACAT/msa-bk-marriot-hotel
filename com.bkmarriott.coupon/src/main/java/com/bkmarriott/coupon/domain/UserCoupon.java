@@ -36,4 +36,13 @@ public class UserCoupon {
         this.spentAt = LocalDateTime.now();
         return this;
     }
+
+    public UserCoupon deleteSpentAt() {
+        this.spentAt = null;
+        return this;
+    }
+
+    public boolean isSpent() {
+        return this.spentAt != null;
+    }
 }
