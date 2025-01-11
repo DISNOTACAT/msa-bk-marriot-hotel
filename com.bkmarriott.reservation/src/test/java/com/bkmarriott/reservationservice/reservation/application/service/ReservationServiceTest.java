@@ -30,7 +30,6 @@ public class ReservationServiceTest {
         PaymentForCreate paymentForCreate = new PaymentForCreate(null, "credit_card", "4111111111111111", "12/25", "123", 1L, 190000L, 171000L);
         ReservationForCreate reservationForCreate = new ReservationForCreate(1L, 1L, RoomType.DELUXE, LocalDate.parse("2025-02-01"), LocalDate.parse("2025-02-02"), paymentForCreate);
         InventoryQuery inventoryQuery = InventoryQuery.fromReservationForCreate(reservationForCreate);
-        Long mockReservationId = 1L;
         Payment mockPayment = new Payment(1L, 1L,190000L, 171000L,"paymentType", "transactionalId", 1L);
         Reservation mockReservation = new Reservation(
                 1L,
@@ -43,11 +42,11 @@ public class ReservationServiceTest {
                 null
         );
 
-        Mockito.when(inventoryService.getAvailableRoomCount(inventoryQuery)).thenReturn(2);
-        Mockito.when(reservationProcessingService.prepareReservation(reservationForCreate)).thenReturn(1L);
-        Mockito.when(reservationProcessingService.processPayment(mockReservationId, reservationForCreate.paymentForCreate())).thenReturn(mockPayment);
-        Mockito.when(reservationCommandOutputPort.updateReservationStatus(mockReservationId, ReservationStatus.PAID)).thenReturn(mockReservation);
-        Mockito.doNothing().when(reservationProcessingService).confirmReservation(mockReservationId, mockPayment);
+        Mockito.doNothing().when(inventoryService).prepareAvailableRoom(inventoryQuery);
+        Mockito.when(reservationProcessingService.prepareReservation(reservationForCreate)).thenReturn(mockReservation);
+        Mockito.when(reservationProcessingService.processPayment(mockReservation, reservationForCreate.paymentForCreate())).thenReturn(mockPayment);
+        Mockito.when(reservationCommandOutputPort.updateReservationStatus(mockReservation.getReservationId(), ReservationStatus.PAID)).thenReturn(mockReservation);
+        Mockito.doNothing().when(reservationProcessingService).confirmReservation(mockReservation, mockPayment);
 
         // When
         Reservation result = reservationService.createReservation(reservationForCreate);

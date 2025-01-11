@@ -1,4 +1,4 @@
-package com.bkmarriott.reservationservice.reservation.infrastructure.adapter;
+package com.bkmarriott.reservationservice.reservation.infrastructure.feignClient.adapter;
 
 import com.bkmarriott.reservationservice.reservation.infrastructure.feignClient.adapter.CouponFeignClientAdapter;
 import com.bkmarriott.reservationservice.reservation.infrastructure.feignClient.client.CouponClient;

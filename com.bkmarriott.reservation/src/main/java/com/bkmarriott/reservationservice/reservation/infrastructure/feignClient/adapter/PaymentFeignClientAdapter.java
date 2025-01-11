@@ -1,6 +1,7 @@
 package com.bkmarriott.reservationservice.reservation.infrastructure.feignClient.adapter;
 
 import com.bkmarriott.reservationservice.reservation.application.outputport.feign.PaymentOutputPort;
+import com.bkmarriott.reservationservice.reservation.domain.Reservation;
 import com.bkmarriott.reservationservice.reservation.domain.vo.Payment;
 import com.bkmarriott.reservationservice.reservation.domain.vo.PaymentForCreate;
 import com.bkmarriott.reservationservice.reservation.infrastructure.feignClient.client.PaymentClient;
@@ -19,17 +20,17 @@ public class PaymentFeignClientAdapter implements PaymentOutputPort {
     private final PaymentClient paymentClient;
 
     @Override
-    public Payment processPayment(PaymentForCreate paymentForCreate, Long reservationId) {
+    public Payment processPayment(PaymentForCreate paymentForCreate, Reservation reservationInfo) {
         log.info("[PaymentFeignClientAdapter] [processPayment] payment ::: {} ", paymentForCreate);
-        return paymentClient.processPayment(PaymentRequestDto.from(paymentForCreate, reservationId)).toDomain();
+        return paymentClient.processPayment(PaymentRequestDto.from(paymentForCreate, reservationInfo.getReservationId()), reservationInfo.getUserId(), "CUSTOMER").toDomain();
     }
 
     @Retry(name = "processRefundRetry", fallbackMethod = "fallbackProcessRefund")
     @CircuitBreaker(name = "payment", fallbackMethod = "fallbackProcessRefund")
     @Override
-    public Payment processRefund(Long paymentId) {
+    public Payment processRefund(Long paymentId, Reservation reservationInfo) {
         log.info("[PaymentFeignClientAdapter] [processRefund] paymentId ::: {} ", paymentId);
-        return paymentClient.processRefund(paymentId).toDomain();
+        return paymentClient.processRefund(paymentId, reservationInfo.getUserId(), "CUSTOMER").toDomain();
     }
 
     public Payment fallbackProcessRefund(Long paymentId, Throwable throwable) {

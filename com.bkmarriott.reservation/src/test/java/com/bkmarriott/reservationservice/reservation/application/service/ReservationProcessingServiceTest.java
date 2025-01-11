@@ -3,6 +3,7 @@ package com.bkmarriott.reservationservice.reservation.application.service;
 import com.bkmarriott.reservationservice.reservation.application.exception.PaymentException;
 import com.bkmarriott.reservationservice.reservation.application.exception.ReservationProcessingException;
 import com.bkmarriott.reservationservice.reservation.application.outputport.ReservationCommandOutputPort;
+import com.bkmarriott.reservationservice.reservation.application.outputport.cache.InventoryCacheOutputPort;
 import com.bkmarriott.reservationservice.reservation.application.outputport.feign.CouponOutputPort;
 import com.bkmarriott.reservationservice.reservation.application.outputport.feign.PaymentOutputPort;
 import com.bkmarriott.reservationservice.reservation.domain.Inventory;
@@ -34,14 +35,26 @@ public class ReservationProcessingServiceTest {
     @Mock private ReservationCommandOutputPort reservationCommandOutputPort;
     @Mock private CouponOutputPort couponOutputPort;
     @Mock private PaymentOutputPort paymentOutputPort;
+    @Mock private InventoryCacheOutputPort inventoryCacheOutputPort;
 
     PaymentForCreate paymentForCreate;
     ReservationForCreate reservationForCreate;
+    Reservation reservation;
 
     @BeforeEach
     void setUp(){
         paymentForCreate = new PaymentForCreate(null, "credit_card", "4111111111111111", "12/25", "123", 1L, 190000L, 171000L);
         reservationForCreate = new ReservationForCreate(1L, 1L, RoomType.DELUXE, LocalDate.parse("2025-02-01"), LocalDate.parse("2025-02-01"), paymentForCreate);
+        reservation = new Reservation(
+                1L,
+                1L,
+                1L,
+                LocalDate.parse("2025-02-01"),
+                LocalDate.parse("2025-02-02"),
+                RoomType.DELUXE,
+                ReservationStatus.PENDING,
+                null
+        );
     }
 
     @Test
@@ -64,11 +77,11 @@ public class ReservationProcessingServiceTest {
         Mockito.when(reservationCommandOutputPort.createReservation(reservationForCreate)).thenReturn(mockReservation);
 
         // When
-        Long reservationId = reservationProcessingService.prepareReservation(reservationForCreate);
+        Reservation result = reservationProcessingService.prepareReservation(reservationForCreate);
 
         // Then
         Assertions.assertAll(
-                () -> Assertions.assertEquals(reservationId, mockReservation.getReservationId()),
+                () -> Assertions.assertEquals(result.getReservationId(), mockReservation.getReservationId()),
                 () -> Assertions.assertEquals(mockReservation.getStatus(), ReservationStatus.PENDING)
         );
         Mockito.verify(couponOutputPort).verifyCoupon(reservationForCreate.paymentForCreate().appliedCoupon());
@@ -87,6 +100,7 @@ public class ReservationProcessingServiceTest {
                         .isInstanceOf(ReservationProcessingException.class)
                         .hasMessage("예약 준비 중 오류가 발생했습니다.")
         );
+        Mockito.verify(inventoryCacheOutputPort, Mockito.times(1)).rollbackCount(InventoryQuery.fromReservationForCreate(reservationForCreate));
     }
 
     @Test
@@ -104,19 +118,19 @@ public class ReservationProcessingServiceTest {
                         .isInstanceOf(ReservationProcessingException.class)
                         .hasMessage("예약 준비 중 오류가 발생했습니다.")
         );
+        Mockito.verify(inventoryCacheOutputPort, Mockito.times(1)).rollbackCount(InventoryQuery.fromReservationForCreate(reservationForCreate));
     }
 
     @Test
     @DisplayName("[성공] 결제 테스트 - 결제 서비스에 요청하고 저장된 Payment 를 반환한다.")
     void processPayment_successTest(){
         // Given
-        Long reservationId = 1L;
         Payment mockPayment = new Payment(1L, 1L,190000L, 171000L,"paymentType", "transactionalId", 1L);
 
-        Mockito.when(paymentOutputPort.processPayment(paymentForCreate, reservationId)).thenReturn(mockPayment);
+        Mockito.when(paymentOutputPort.processPayment(paymentForCreate, reservation)).thenReturn(mockPayment);
 
         // When
-        Payment result = reservationProcessingService.processPayment(reservationId, paymentForCreate);
+        Payment result = reservationProcessingService.processPayment(reservation, paymentForCreate);
 
         // Then
         Assertions.assertAll(
@@ -129,23 +143,21 @@ public class ReservationProcessingServiceTest {
     @DisplayName("[실패] 결제 테스트 - 결제 처리 중 FeignClient 오류 발생시 ReservationProcessingException 예외를 발생한다.")
     void processPayment_FailureTest(){
         // Given
-        Long reservationId = 1L;
-
-        Mockito.when(reservationProcessingService.processPayment(reservationId, paymentForCreate)).thenThrow(FeignException.class);
+        Mockito.when(reservationProcessingService.processPayment(reservation, paymentForCreate)).thenThrow(FeignException.class);
 
         // When & Then
         Assertions.assertAll(
-                () -> assertThatThrownBy(() -> reservationProcessingService.processPayment(reservationId, paymentForCreate))
+                () -> assertThatThrownBy(() -> reservationProcessingService.processPayment(reservation, paymentForCreate))
                         .isInstanceOf(PaymentException.class)
                         .hasMessage("결제가 진행되지 않았습니다.")
         );
+        Mockito.verify(inventoryCacheOutputPort, Mockito.times(1)).rollbackCount(InventoryQuery.fromReservation(reservation));
     }
 
     @Test
     @DisplayName("[성공] 예약확정 테스트 - 결제가 완료되면 쿠폰 사용 처리와 예약 객실을 증가시킨다.")
     void confirmReservation_successTest(){
         // Given
-        Long reservationId = 1L;
         CouponDto mockCoupon = new CouponDto(1L, reservationForCreate.userId(), null, null, null);
         Payment mockPayment = new Payment(1L, 1L,190000L, 171000L,"paymentType", "transactionalId", 1L);
         List<Inventory> inventoryList = List.of(
@@ -154,18 +166,18 @@ public class ReservationProcessingServiceTest {
         );
 
         Mockito.when(couponOutputPort.useCoupon(paymentForCreate.appliedCoupon())).thenReturn(mockCoupon);
-        Mockito.when(inventoryService.updateTotalReserved(reservationId)).thenReturn(inventoryList);
+        Mockito.when(inventoryService.updateTotalReserved(reservation.getReservationId())).thenReturn(inventoryList);
 
         // When
-        reservationProcessingService.confirmReservation(reservationId, mockPayment);
+        reservationProcessingService.confirmReservation(reservation, mockPayment);
 
         // Then
         Mockito.verify(couponOutputPort).useCoupon(paymentForCreate.appliedCoupon()); // 쿠폰 사용이 호출됐는지 검증
-        Mockito.verify(inventoryService).updateTotalReserved(reservationId); // 예약 객실 수가 증가했는지 검증
+        Mockito.verify(inventoryService).updateTotalReserved(reservation.getReservationId()); // 예약 객실 수가 증가했는지 검증
     }
 
     @Test
-    @DisplayName("[성공] 예약확정 테스트 - 결제가 완료되면 쿠폰 사용 처리와 예약 객실을 증가시킨다.")
+    @DisplayName("[실패] 예약확정 테스트 - 예약 확정 중 오류가 생기면 예약 객실을 감소시킨다.")
     void confirmReservation_FailureTest(){
         // Given
         Long reservationId = 1L;
@@ -175,12 +187,13 @@ public class ReservationProcessingServiceTest {
 
         // When & Then
         Assertions.assertAll(
-                () -> assertThatThrownBy(() -> reservationProcessingService.confirmReservation(reservationId, mockPayment))
+                () -> assertThatThrownBy(() -> reservationProcessingService.confirmReservation(reservation, mockPayment))
                         .isInstanceOf(ReservationProcessingException.class)
                         .hasMessage("예약 확정 중 오류가 발생했습니다.")
         );
 
-        Mockito.verify(paymentOutputPort).processRefund(mockPayment.paymentId());
+        Mockito.verify(paymentOutputPort).processRefund(mockPayment.paymentId(), reservation);
         Mockito.verify(reservationCommandOutputPort).updateReservationStatus(reservationId, ReservationStatus.REFUNDED);
+        Mockito.verify(inventoryCacheOutputPort, Mockito.times(1)).rollbackCount(InventoryQuery.fromReservation(reservation));
     }
 }

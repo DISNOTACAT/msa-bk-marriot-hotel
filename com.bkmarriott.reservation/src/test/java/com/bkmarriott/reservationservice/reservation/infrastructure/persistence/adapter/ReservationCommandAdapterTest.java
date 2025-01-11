@@ -1,4 +1,4 @@
-package com.bkmarriott.reservationservice.reservation.infrastructure.adapter;
+package com.bkmarriott.reservationservice.reservation.infrastructure.persistence.adapter;
 
 import com.bkmarriott.reservationservice.reservation.application.exception.ResourceNotFoundException;
 import com.bkmarriott.reservationservice.reservation.domain.Reservation;
