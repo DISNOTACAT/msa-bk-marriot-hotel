@@ -19,17 +19,24 @@ public class InventoryCommandAdaptor implements InventoryCommandOutputPort {
 
   @Override
   public Optional<Inventory> increaseReserved(Inventory inventory) {
+
+    inventoryRepository.increaseReserved(RoomTypeInventoryId.of(
+            inventory.getHotelId(), inventory.getDate(), inventory.getRoomType()));
+
     return inventoryRepository.findById(RoomTypeInventoryId.of(
             inventory.getHotelId(), inventory.getDate(), inventory.getRoomType()))
-        .map(RoomTypeInventoryEntity::increaseReserved)
         .map(RoomTypeInventoryEntity::toDomain);
+
   }
 
   @Override
   public Optional<Inventory> decreaseReserved(Inventory inventory) {
+
+    inventoryRepository.decreaseReserved(RoomTypeInventoryId.of(
+        inventory.getHotelId(), inventory.getDate(), inventory.getRoomType()));
+
     return inventoryRepository.findById(RoomTypeInventoryId.of(
             inventory.getHotelId(), inventory.getDate(), inventory.getRoomType()))
-        .map(RoomTypeInventoryEntity::decreaseReserved)
         .map(RoomTypeInventoryEntity::toDomain);
   }
 }
