@@ -47,7 +47,7 @@ public class Inventory {
 
   public static List<LocalDate> getDateRange(LocalDate startDate, LocalDate endDate) {
 
-    return startDate.datesUntil(endDate).toList(); // endDate 제외
+    return startDate.datesUntil(endDate.plusDays(1)).toList(); // endDate 제외
   }
 
   public int getAvailableRoomCount(){
