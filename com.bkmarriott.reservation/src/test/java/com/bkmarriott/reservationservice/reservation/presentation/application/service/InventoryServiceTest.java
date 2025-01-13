@@ -74,7 +74,7 @@ class InventoryServiceTest {
 
     //Then
     Assertions.assertAll(
-        () -> Assertions.assertEquals(actual.size(), 1),
+        () -> Assertions.assertEquals(actual.size(), 2),
         () -> Assertions.assertEquals(actual.get(0).getHotelId(), mockInventory.getHotelId()),
         () -> Assertions.assertEquals(actual.get(0).getDate(), mockInventory.getDate()),
         () -> Assertions.assertEquals(actual.get(0).getRoomType(), mockInventory.getRoomType()),
@@ -115,7 +115,7 @@ class InventoryServiceTest {
 
     //Then
     Assertions.assertAll(
-        () -> Assertions.assertEquals(actual.size(), 1),
+        () -> Assertions.assertEquals(actual.size(), 2),
         () -> Assertions.assertEquals(actual.get(0).getHotelId(), mockInventory.getHotelId()),
         () -> Assertions.assertEquals(actual.get(0).getDate(), mockInventory.getDate()),
         () -> Assertions.assertEquals(actual.get(0).getRoomType(), mockInventory.getRoomType()),
@@ -156,7 +156,7 @@ class InventoryServiceTest {
 
     //Then
     Assertions.assertAll(
-        () -> Assertions.assertEquals(actual.size(), 1),
+        () -> Assertions.assertEquals(actual.size(), 2),
         () -> Assertions.assertEquals(actual.get(0).getHotelId(), mockInventory.getHotelId()),
         () -> Assertions.assertEquals(actual.get(0).getDate(), mockInventory.getDate()),
         () -> Assertions.assertEquals(actual.get(0).getRoomType(), mockInventory.getRoomType()),

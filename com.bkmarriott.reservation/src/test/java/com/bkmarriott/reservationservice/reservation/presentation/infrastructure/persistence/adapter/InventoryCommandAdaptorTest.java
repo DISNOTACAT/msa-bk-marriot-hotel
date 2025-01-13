@@ -26,7 +26,7 @@ class InventoryCommandAdaptorTest {
   @DisplayName("[인벤토리 조회 성공 테스트] 호텔 아이디, 룸 타입, 날짜로 인벤토리를 조회한 후, 엔티티 객체를 반환한다.")
   void find_successTest() {
     //Given
-    Long hotelId = 1L;
+    Long hotelId = 101L;
     LocalDate date = LocalDate.of(2025, 2, 1);
     RoomType roomType = RoomType.DELUXE;
     //When
@@ -78,11 +78,11 @@ class InventoryCommandAdaptorTest {
   }
 
   private Inventory testInventory() {
-    Long hotelId = 1L;
+    Long hotelId = 101L;
     LocalDate date = LocalDate.of(2025, 2, 1);
     RoomType roomType = RoomType.DELUXE;
-    int totalInventory = 80;
-    int totalReserved = 78;
+    int totalInventory = 300;
+    int totalReserved = 0;
 
     return Inventory.of(hotelId, date, roomType, totalInventory, totalReserved);
   }
