@@ -35,6 +35,16 @@ public class Inventory {
         .build();
   }
 
+  public static List<Inventory> of(Long hotelId, RoomType roomType, LocalDate startDate, LocalDate endDate) {
+    return getDateRange(startDate, endDate).stream()
+        .map(date -> Inventory.builder()
+            .hotelId(hotelId)
+            .date(date)
+            .roomType(roomType)
+            .build())
+        .toList();
+  }
+
   public static List<Inventory> from(Reservation reservation) {
     return getDateRange(reservation.getStartDate(), reservation.getEndDate()).stream()
         .map(date -> Inventory.builder()
@@ -47,7 +57,7 @@ public class Inventory {
 
   public static List<LocalDate> getDateRange(LocalDate startDate, LocalDate endDate) {
 
-    return startDate.datesUntil(endDate.plusDays(1)).toList(); // endDate 제외
+    return startDate.datesUntil(endDate.plusDays(1)).toList();
   }
 
   public int getAvailableRoomCount(){
