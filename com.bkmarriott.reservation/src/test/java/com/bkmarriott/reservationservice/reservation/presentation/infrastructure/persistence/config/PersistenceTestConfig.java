@@ -40,8 +40,8 @@ public class PersistenceTestConfig {
   }
 
   @Bean
-  public InventoryCommandAdaptor inventoryCommandAdaptor(@Autowired InventoryRepository inventoryRepository) {
-    return new InventoryCommandAdaptor(inventoryRepository);
+  public InventoryCommandAdaptor inventoryCommandAdaptor(@Autowired InventoryRepository inventoryRepository,InventoryQueryDslRepository inventoryQueryDslRepository) {
+    return new InventoryCommandAdaptor(inventoryRepository, inventoryQueryDslRepository);
   }
 
   @Bean

@@ -1,12 +1,14 @@
 package com.bkmarriott.reservationservice.reservation.presentation.infrastructure.persistence.adapter;
 
 import com.bkmarriott.reservationservice.reservation.domain.Inventory;
+import com.bkmarriott.reservationservice.reservation.domain.Reservation;
+import com.bkmarriott.reservationservice.reservation.domain.vo.ReservationStatus;
 import com.bkmarriott.reservationservice.reservation.domain.vo.RoomType;
 import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.adapter.InventoryCommandAdaptor;
-import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.adapter.InventoryQueryAdaptor;
+import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.repository.InventoryQueryDslRepository;
 import com.bkmarriott.reservationservice.reservation.presentation.infrastructure.persistence.config.RepositoryTest;
 import java.time.LocalDate;
-import java.util.Optional;
+import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,26 +21,7 @@ class InventoryCommandAdaptorTest {
   @Autowired
   private InventoryCommandAdaptor inventoryCommandAdaptor;
   @Autowired
-  private InventoryQueryAdaptor inventoryQueryAdaptor;
-
-
-  @Test
-  @DisplayName("[인벤토리 조회 성공 테스트] 호텔 아이디, 룸 타입, 날짜로 인벤토리를 조회한 후, 엔티티 객체를 반환한다.")
-  void find_successTest() {
-    //Given
-    Long hotelId = 101L;
-    LocalDate date = LocalDate.of(2025, 2, 1);
-    RoomType roomType = RoomType.DELUXE;
-    //When
-    Optional<Inventory> actual = inventoryQueryAdaptor.findById(hotelId, date, roomType);
-    //Then
-    Assertions.assertAll(
-        () -> Assertions.assertEquals(hotelId, actual.get().getHotelId()),
-        () -> Assertions.assertEquals(date, actual.get().getDate()),
-        () -> Assertions.assertEquals(roomType, actual.get().getRoomType())
-    );
-
-  }
+  private InventoryQueryDslRepository inventoryQueryDslRepository;
 
 
   @Test
@@ -46,16 +29,14 @@ class InventoryCommandAdaptorTest {
   void update_increase_successTest() {
 
     //Given
-    Inventory inventory = testInventory();
+    Reservation reservation = testReservation();
     //When
-    Optional<Inventory> actual = inventoryCommandAdaptor.increaseReserved(inventory);
+    List<Inventory> actual = inventoryCommandAdaptor.increaseReserved(reservation);
     //Then
     Assertions.assertAll(
-        () -> Assertions.assertEquals(inventory.getHotelId(), actual.get().getHotelId()),
-        () -> Assertions.assertEquals(inventory.getDate(), actual.get().getDate()),
-        () -> Assertions.assertEquals(inventory.getRoomType(), actual.get().getRoomType()),
-        () -> Assertions.assertEquals(inventory.getTotalInventory(), actual.get().getTotalInventory()),
-        () -> Assertions.assertEquals(inventory.getTotalReserved() + 1, actual.get().getTotalReserved())
+        () -> Assertions.assertEquals(reservation.getHotelId(), actual.get(0).getHotelId()),
+        () -> Assertions.assertEquals(reservation.getStartDate(), actual.get(0).getDate()),
+        () -> Assertions.assertEquals(reservation.getRoomType(), actual.get(0).getRoomType())
     );
   }
 
@@ -64,26 +45,28 @@ class InventoryCommandAdaptorTest {
   void update_decrease_successTest() {
 
     //Given
-    Inventory inventory = testInventory();
+    Reservation reservation = testReservation();
     //When
-    Optional<Inventory> actual = inventoryCommandAdaptor.decreaseReserved(inventory);
+    List<Inventory> actual = inventoryCommandAdaptor.decreaseReserved(reservation);
     //Then
     Assertions.assertAll(
-        () -> Assertions.assertEquals(inventory.getHotelId(), actual.get().getHotelId()),
-        () -> Assertions.assertEquals(inventory.getDate(), actual.get().getDate()),
-        () -> Assertions.assertEquals(inventory.getRoomType(), actual.get().getRoomType()),
-        () -> Assertions.assertEquals(inventory.getTotalInventory(), actual.get().getTotalInventory()),
-        () -> Assertions.assertEquals(inventory.getTotalReserved() - 1, actual.get().getTotalReserved())
+        () -> Assertions.assertEquals(reservation.getHotelId(), actual.get(0).getHotelId()),
+        () -> Assertions.assertEquals(reservation.getStartDate(), actual.get(0).getDate()),
+        () -> Assertions.assertEquals(reservation.getRoomType(), actual.get(0).getRoomType())
     );
   }
 
-  private Inventory testInventory() {
-    Long hotelId = 101L;
-    LocalDate date = LocalDate.of(2025, 2, 1);
-    RoomType roomType = RoomType.DELUXE;
-    int totalInventory = 300;
-    int totalReserved = 0;
+  private Reservation testReservation() {
 
-    return Inventory.of(hotelId, date, roomType, totalInventory, totalReserved);
+    Long reservationId = 1L;
+    Long userId =  1L;
+    Long hotelId =  101L;
+    LocalDate startDate = LocalDate.of(2025, 2, 1);
+    LocalDate endDate = LocalDate.of(2025, 2, 2);
+    RoomType roomType = RoomType.DELUXE;
+    ReservationStatus status = ReservationStatus.PAID;
+    Long roomId = null;
+
+    return new Reservation(reservationId, userId, hotelId, startDate, endDate, roomType, status, roomId);
   }
 }
