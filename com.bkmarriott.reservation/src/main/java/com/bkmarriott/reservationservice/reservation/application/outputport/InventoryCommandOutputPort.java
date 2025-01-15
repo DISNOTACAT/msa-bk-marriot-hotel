@@ -1,11 +1,12 @@
 package com.bkmarriott.reservationservice.reservation.application.outputport;
 
 import com.bkmarriott.reservationservice.reservation.domain.Inventory;
-import java.util.Optional;
+import com.bkmarriott.reservationservice.reservation.domain.Reservation;
+import java.util.List;
 
 public interface InventoryCommandOutputPort {
 
-  Optional<Inventory> increaseReserved(Inventory inventory);
+  List<Inventory> increaseReserved(Reservation resrvation);
 
-  Optional<Inventory> decreaseReserved(Inventory inventory);
+  List<Inventory> decreaseReserved(Reservation resrvation);
 }

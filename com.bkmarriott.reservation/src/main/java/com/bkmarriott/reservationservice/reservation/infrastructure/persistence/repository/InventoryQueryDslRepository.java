@@ -1,6 +1,6 @@
 package com.bkmarriott.reservationservice.reservation.infrastructure.persistence.repository;
 
-import static com.bkmarriott.reservationservice.reservation.infrastructure.persistence.entity.QRoomTypeInventoryEntity.*;
+import static com.bkmarriott.reservationservice.reservation.infrastructure.persistence.entity.QRoomTypeInventoryEntity.roomTypeInventoryEntity;
 
 import com.bkmarriott.reservationservice.reservation.application.dto.InventoryQueryRequestDto;
 import com.bkmarriott.reservationservice.reservation.application.dto.InventoryQueryResponseDto;
@@ -9,9 +9,8 @@ import com.bkmarriott.reservationservice.reservation.domain.vo.InventoryQuery;
 import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.entity.RoomEntityType;
 import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.entity.RoomTypeInventoryEntity;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import java.util.List;
-
 import jakarta.persistence.LockModeType;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
