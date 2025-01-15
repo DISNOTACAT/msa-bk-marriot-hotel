@@ -36,6 +36,7 @@ public class InventoryService {
 
   public List<Inventory> updateTotalReserved(Long reservationId) {
 
+
     Reservation reservation = reservationQueryOutputPort.findById(reservationId)
         .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 예약 정보"));
 
@@ -43,23 +44,16 @@ public class InventoryService {
         log.debug("[InventoryService] [Increase totalReserved] hotelId ::: {}, roomtype ::: {}"
             , reservation.getHotelId(), reservation.getRoomType());
 
-        return Inventory.from(reservation)
-            .stream()
-            .map(inventory -> inventoryCommandOutputPort.increaseReserved(inventory)
-                .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 인벤토리 정보")))
-            .toList();
+        return inventoryCommandOutputPort.increaseReserved(reservation);
       }
 
     if (reservation.getStatus().equals(ReservationStatus.CANCELLED) || reservation.getStatus().equals(ReservationStatus.REFUNDED)) {
       log.debug("[InventoryService] [Decrease totalReserved] hotelId ::: {}, roomtype ::: {}"
           , reservation.getHotelId(), reservation.getRoomType());
 
-      return Inventory.from(reservation)
-          .stream()
-          .map(inventory -> inventoryCommandOutputPort.decreaseReserved(inventory)
-              .orElseThrow(() -> new ResourceNotFoundException("존재하지 않는 인벤토리 정보")))
-          .toList();
-      }
+      return inventoryCommandOutputPort.decreaseReserved(reservation);
+
+    }
 
     log.error("[InventoryService] [updateTotalReserved] hotelId ::: {}, roomType ::: {}",
         reservation.getHotelId(), reservation.getRoomType());

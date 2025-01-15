@@ -125,6 +125,43 @@ class RoomChargeServiceTest {
     }
 
     @Test
+    @DisplayName("[객실 요금 목록 조회 성공 테스트] 해당 객실 타입의 객실 요금 목록을 반환한다.")
+    void findAll_successTest() {
+        // Given
+        Long hotelId = 1L;
+        RoomType roomType = RoomType.STANDARD;
+        LocalDate date1 = LocalDate.of(2025, 1, 1);
+        LocalDate date2 = LocalDate.of(2025, 1, 2);
+
+        // Given
+        List<RoomChargeId> mockRoomChargeIds = List.of(
+                new RoomChargeId(hotelId, roomType, date1),
+                new RoomChargeId(hotelId, roomType, date2)
+        );
+
+        List<RoomCharge> mockRoomCharges = List.of(
+                new RoomCharge(mockRoomChargeIds.get(0), 10000),
+                new RoomCharge(mockRoomChargeIds.get(1), 20000)
+        );
+
+        Mockito.when(roomChargeOutputPort.findAll(ArgumentMatchers.any())).thenReturn(mockRoomCharges);
+
+        // When
+        List<RoomCharge> result = roomChargeService.findAll(mockRoomChargeIds);
+
+        // Then
+        Assertions.assertAll(
+                () -> Assertions.assertEquals(2, result.size()),
+                () -> Assertions.assertEquals(hotelId, result.get(0).getId().hotelId()),
+                () -> Assertions.assertEquals(roomType, result.get(0).getId().roomType()),
+                () -> Assertions.assertEquals(date1,  result.get(0).getId().date()),
+                () -> Assertions.assertEquals(10000, result.get(0).getCharge())
+        );
+
+        Mockito.verify(roomChargeOutputPort, Mockito.times(1)).findAll(mockRoomChargeIds);
+    }
+
+    @Test
     @DisplayName("[객실 요금 수정 성공 테스트] 객실 요금 수정 후 객실 요금 정보를 반환한다.")
     void update_successTest() {
         // Given

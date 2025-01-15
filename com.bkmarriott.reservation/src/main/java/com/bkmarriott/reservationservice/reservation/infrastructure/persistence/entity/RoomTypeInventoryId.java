@@ -1,5 +1,6 @@
 package com.bkmarriott.reservationservice.reservation.infrastructure.persistence.entity;
 
+import com.bkmarriott.reservationservice.reservation.domain.Inventory;
 import com.bkmarriott.reservationservice.reservation.domain.vo.RoomType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
@@ -36,5 +37,9 @@ public class RoomTypeInventoryId implements Serializable {
 
   public static RoomTypeInventoryId of(Long hotelId, LocalDate date, RoomType roomType) {
     return new RoomTypeInventoryId(hotelId,date,RoomEntityType.fromDomain(roomType));
+  }
+
+  public static RoomTypeInventoryId from(Inventory inventory) {
+    return new RoomTypeInventoryId(inventory.getHotelId(),inventory.getDate(),RoomEntityType.fromDomain(inventory.getRoomType()));
   }
 }
