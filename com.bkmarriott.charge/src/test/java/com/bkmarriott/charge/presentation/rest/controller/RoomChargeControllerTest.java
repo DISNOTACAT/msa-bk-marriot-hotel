@@ -6,6 +6,8 @@ import com.bkmarriott.charge.domain.vo.RoomChargeForCreate;
 import com.bkmarriott.charge.domain.vo.RoomChargeId;
 import com.bkmarriott.charge.domain.vo.RoomType;
 import com.bkmarriott.charge.presentation.rest.dto.CreateRoomCharge;
+import com.bkmarriott.charge.presentation.rest.dto.FindRoomChargeByDates;
+import com.bkmarriott.charge.presentation.rest.dto.FindRoomChargeByHotelIds;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,6 +22,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @DisplayName("[Presentation] RoomCharge Controller Unit Test")
 @WebMvcTest(controllers = RoomChargeController.class)
@@ -87,6 +90,69 @@ class RoomChargeControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.roomType").value(roomType.name()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.date").value(date.toString()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.charge").value(charge));
+    }
+
+    @Test
+    @DisplayName("[호텔 ID 목록으로 객실 요금 조회 성공 테스트] 호텔 ID 목록, 객실 타입, 날짜가 일치하는 객실 요금 목록을 반환한다.")
+    void findRoomChargeByHotelIds_successTest() throws Exception {
+        // Given
+        List<Long> hotelIds = List.of(1L, 2L, 3L, 10L);
+        RoomType roomType = RoomType.STANDARD;
+        LocalDate date = LocalDate.of(2025, 1, 1);
+        Integer charge = 10000;
+
+        FindRoomChargeByHotelIds.Request request = new FindRoomChargeByHotelIds.Request(hotelIds, roomType, date);
+        List<RoomCharge> mockRoomCharges = hotelIds.stream().map(
+                hotelId -> new RoomCharge(RoomChargeId.of(hotelId, roomType, date), charge)
+        ).toList();
+        Mockito.when(roomChargeService.findAll(request.toDomain())).thenReturn(mockRoomCharges);
+
+        // When & Then
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/charges/hotels")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("hotelIds", String.join(",", hotelIds.stream().map(Object::toString).toList()))
+                        .param("roomType", roomType.name())
+                        .param("date", date.toString()))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.length()").value(mockRoomCharges.size()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].hotelId").value(hotelIds.get(0)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[-1].hotelId").value(hotelIds.get(hotelIds.size() - 1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].roomType").value(roomType.name()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].date").value(date.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].charge").value(charge));
+    }
+
+    @Test
+    @DisplayName("[시작 날짜와 끝 날짜로 객실 요금 조회 성공 테스트] 호텔 ID, 객실 타입, 시작 날짜부터 끝 날짜가 일치하는 객실 요금 목록을 반환한다.")
+    void findRoomChargeByDates_successTest() throws Exception {
+        // Given
+        Long hotelId = 1L;
+        RoomType roomType = RoomType.STANDARD;
+        LocalDate startDate = LocalDate.of(2025, 1, 1);
+        LocalDate endDate = LocalDate.of(2025, 1, 3);
+
+        Integer charge = 10000;
+
+        FindRoomChargeByDates.Request request = new FindRoomChargeByDates.Request(hotelId, roomType, startDate, endDate);
+        List<RoomCharge> mockRoomCharges = startDate.datesUntil(endDate.plusDays(1)).map(
+                date -> new RoomCharge(RoomChargeId.of(hotelId, roomType, date), charge)
+        ).toList();
+        Mockito.when(roomChargeService.findAll(request.toDomain())).thenReturn(mockRoomCharges);
+
+        // When & Then
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/charges/dates")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("hotelId", hotelId.toString())
+                        .param("roomType", roomType.name())
+                        .param("startDate", startDate.toString())
+                        .param("endDate", endDate.toString()))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.length()").value(mockRoomCharges.size()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].hotelId").value(hotelId.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].roomType").value(roomType.name()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].date").value(startDate.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[-1].date").value(endDate.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].charge").value(charge));
     }
 
     @Test

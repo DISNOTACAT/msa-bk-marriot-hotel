@@ -12,6 +12,8 @@ public interface RoomChargeOutputPort {
 
     Optional<RoomCharge> findById(RoomChargeId roomChargeId);
 
+    List<RoomCharge> findAll(List<RoomChargeId> roomChargeIdList);
+
     RoomCharge create(RoomChargeForCreate roomChargeForCreate);
 
     void bulkCreate(List<RoomChargeForCreate> roomChargeForCreateList);

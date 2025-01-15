@@ -42,26 +42,13 @@ class RoomChargeAdapterTest {
     @DisplayName("[객실 요금 벌크 등록 성공 테스트] 객실 요금을 벌크 생성한다.")
     void bulkCreate_successTest() {
         // Given
-        List<RoomChargeForCreate> roomChargeForCreateList = List.of(
-                RoomChargeForCreate.of(1L, RoomType.STANDARD, LocalDate.of(2025, 1, 1), 10000),
-                RoomChargeForCreate.of(1L, RoomType.DELUXE, LocalDate.of(2025, 1, 1), 20000),
-                RoomChargeForCreate.of(1L, RoomType.TWIN, LocalDate.of(2025, 1, 1), 30000),
-                RoomChargeForCreate.of(1L, RoomType.STANDARD, LocalDate.of(2025, 1, 2), 10000),
-                RoomChargeForCreate.of(1L, RoomType.DELUXE, LocalDate.of(2025, 1, 2), 20000),
-                RoomChargeForCreate.of(1L, RoomType.TWIN, LocalDate.of(2025, 1, 2), 30000),
-                RoomChargeForCreate.of(2L, RoomType.STANDARD, LocalDate.of(2025, 1, 1), 10000),
-                RoomChargeForCreate.of(2L, RoomType.DELUXE, LocalDate.of(2025, 1, 1), 20000),
-                RoomChargeForCreate.of(2L, RoomType.TWIN, LocalDate.of(2025, 1, 1), 30000),
-                RoomChargeForCreate.of(2L, RoomType.STANDARD, LocalDate.of(2025, 1, 2), 10000),
-                RoomChargeForCreate.of(2L, RoomType.DELUXE, LocalDate.of(2025, 1, 2), 20000),
-                RoomChargeForCreate.of(2L, RoomType.TWIN, LocalDate.of(2025, 1, 2), 30000)
-        );
+        List<RoomChargeForCreate> roomChargeForCreateList = genRoomChargeForCreateList();
         // When & Then
         Assertions.assertDoesNotThrow(() -> roomChargeAdapter.bulkCreate(roomChargeForCreateList));
     }
 
     @Test
-    @DisplayName("[객실 요금 조회 성공 테스트] 호텔 아이디, 객실 타입으로 객실 요금을 조회한 뒤 Optional 객체에 담아 반환한다.")
+    @DisplayName("[객실 요금 조회 성공 테스트] 객실 요금 ID로 객실 요금을 조회한 뒤 Optional 객체에 담아 반환한다.")
     void findById_successTest() {
         // Given
         RoomChargeForCreate roomChargeForCreate = genRoomChargeForCreate();
@@ -72,6 +59,22 @@ class RoomChargeAdapterTest {
         Assertions.assertAll(
                 () -> Assertions.assertTrue(optionalRoomCharge.isPresent()),
                 () -> Assertions.assertEquals(roomCharge.getId(), optionalRoomCharge.get().getId())
+        );
+    }
+
+    @Test
+    @DisplayName("[객실 요금 목록 조회 성공 테스트] 객실 요금 ID 목록으로 객실 요금 목록을 조회한 뒤 List 객체에 담아 반환한다.")
+    void findAll_successTest() {
+        // Given
+        List<RoomChargeForCreate> roomChargeForCreateList = genRoomChargeForCreateList();
+        roomChargeAdapter.bulkCreate(roomChargeForCreateList);
+        // When
+        List<RoomCharge> roomChargeList = roomChargeAdapter.findAll(
+                roomChargeForCreateList.stream().map(RoomChargeForCreate::id).toList()
+        );
+        // Then
+        Assertions.assertAll(
+                () -> Assertions.assertEquals(roomChargeForCreateList.size(), roomChargeList.size())
         );
     }
 
@@ -110,5 +113,23 @@ class RoomChargeAdapterTest {
         Integer charge = 10000;
 
         return RoomChargeForCreate.of(hotelId, roomType, date, charge);
+    }
+
+    private List<RoomChargeForCreate> genRoomChargeForCreateList() {
+
+        return List.of(
+                RoomChargeForCreate.of(1L, RoomType.STANDARD, LocalDate.of(2025, 1, 1), 10000),
+                RoomChargeForCreate.of(1L, RoomType.DELUXE, LocalDate.of(2025, 1, 1), 20000),
+                RoomChargeForCreate.of(1L, RoomType.TWIN, LocalDate.of(2025, 1, 1), 30000),
+                RoomChargeForCreate.of(1L, RoomType.STANDARD, LocalDate.of(2025, 1, 2), 10000),
+                RoomChargeForCreate.of(1L, RoomType.DELUXE, LocalDate.of(2025, 1, 2), 20000),
+                RoomChargeForCreate.of(1L, RoomType.TWIN, LocalDate.of(2025, 1, 2), 30000),
+                RoomChargeForCreate.of(2L, RoomType.STANDARD, LocalDate.of(2025, 1, 1), 10000),
+                RoomChargeForCreate.of(2L, RoomType.DELUXE, LocalDate.of(2025, 1, 1), 20000),
+                RoomChargeForCreate.of(2L, RoomType.TWIN, LocalDate.of(2025, 1, 1), 30000),
+                RoomChargeForCreate.of(2L, RoomType.STANDARD, LocalDate.of(2025, 1, 2), 10000),
+                RoomChargeForCreate.of(2L, RoomType.DELUXE, LocalDate.of(2025, 1, 2), 20000),
+                RoomChargeForCreate.of(2L, RoomType.TWIN, LocalDate.of(2025, 1, 2), 30000)
+        );
     }
 }

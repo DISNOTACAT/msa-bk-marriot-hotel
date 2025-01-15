@@ -28,6 +28,13 @@ public class RoomChargeAdapter implements RoomChargeOutputPort {
                 .map(RoomChargeEntity::toDomain);
     }
 
+    public List<RoomCharge> findAll(List<RoomChargeId> roomChargeIdList) {
+        return roomChargeRepository.findAllByIdIsInAndIsDeletedFalse(roomChargeIdList.stream().map(RoomChargeEntityId::fromDomain).toList())
+                .stream()
+                .map(RoomChargeEntity::toDomain)
+                .toList();
+    }
+
     public RoomCharge create(RoomChargeForCreate roomChargeForCreate) {
         RoomChargeEntity roomChargeEntity = RoomChargeEntity.from(roomChargeForCreate);
         return roomChargeRepository.save(roomChargeEntity).toDomain();

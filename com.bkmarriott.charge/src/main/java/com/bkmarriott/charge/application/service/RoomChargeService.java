@@ -46,6 +46,12 @@ public class RoomChargeService {
                 .orElseThrow(RoomChargeNotFoundException::new);
     }
 
+    public List<RoomCharge> findAll(List<RoomChargeId> roomChargeIdList) {
+        log.info("[RoomChargeService] [findAll] roomChargeIds ::: {}", roomChargeIdList);
+
+        return roomChargeOutputPort.findAll(roomChargeIdList);
+    }
+
     @Transactional
     public RoomCharge update(RoomChargeForCreate roomChargeForCreate) {
         log.info("[RoomChargeService] [update] hotelId ::: {}, roomType ::: {}", roomChargeForCreate.id().hotelId(), roomChargeForCreate.id().roomType());
