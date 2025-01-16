@@ -1,0 +1,171 @@
+name: CI/CD with github actions & docker
+
+on:
+  push:
+    branches: [ "develop", "main" ]
+
+jobs:
+  build-and-deploy:
+    name: Build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service:
+          - name: "eureka"
+            folder: "com.bkmarriott.eureka"
+          - name: "gateway"
+            folder: "com.bkmarriott.gateway"
+          - name: "auth"
+            folder: "com.bkmarriott.auth"
+          - name: "coupon"
+            folder: "com.bkmarriott.coupon"
+          - name: "charge"
+            folder: "com.bkmarriott.charge"
+          - name: "promotion"
+            folder: "com.bkmarriott.promotion"
+          - name: "hotel"
+            folder: "com.bkmarriott.hotel"
+          - name: "reservation"
+            folder: "com.bkmarriott.reservation"
+          - name: "payment"
+            folder: "com.bkmarriott.payment"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Detect Changed Services
+        id: detect_changes
+        run: |
+          CHANGED_FILES=$(git diff --name-only HEAD^ HEAD)
+          echo "Changed files: $CHANGED_FILES"
+          
+          SERVICES_TO_BUILD=""
+
+          for CHANGED_FILE in $CHANGED_FILES; do
+            FOLDER=$(echo "$CHANGED_FILE" | sed 's/\/.*//')
+          
+            if [[ ! "$SERVICES_TO_BUILD" =~ "$FOLDER" ]]; then
+            SERVICES_TO_BUILD="$SERVICES_TO_BUILD $FOLDER"
+            fi
+          done
+          
+          echo "Folders to build: $SERVICES_TO_BUILD"
+          echo "services_to_build=$SERVICES_TO_BUILD" >> $GITHUB_ENV
+
+      - name: Skip Unchanged Services
+        if: ${{ !contains(env.services_to_build, matrix.service.folder) }}
+        run: |
+          echo "Skipping service: ${{ matrix.service.name }}"
+          exit 0
+
+      - name: Set up JDK 17
+        if: ${{ contains(env.services_to_build, matrix.service.folder) }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Inject application.yml
+        if: ${{ contains(env.services_to_build, matrix.service.folder) }}
+        run: |
+          if [ "${{ matrix.service.name }}" == "eureka" ]; then
+            echo "${{ secrets.EUREKA_SERVER_APPLICATION_DEV_YML }}" > ${{ matrix.service.folder }}/src/main/resources/application-dev.yml
+          elif [ "${{ matrix.service.name }}" == "auth" ]; then
+            echo "${{ secrets.AUTH_APPLICATION_DEV_YML }}" > ${{ matrix.service.folder }}/src/main/resources/application-dev.yml
+          elif [ "${{ matrix.service.name }}" == "charge" ]; then
+            echo "${{ secrets.CHARGE_APPLICATION_DEV_YML }}" > ${{ matrix.service.folder }}/src/main/resources/application-dev.yml
+          elif [ "${{ matrix.service.name }}" == "coupon" ]; then
+            echo "${{ secrets.COUPON_APPLICATION_DEV_YML }}" > ${{ matrix.service.folder }}/src/main/resources/application-dev.yml
+          elif [ "${{ matrix.service.name }}" == "gateway" ]; then
+            echo "${{ secrets.GATEWAY_APPLICATION_DEV_YML }}" > ${{ matrix.service.folder }}/src/main/resources/application-dev.yml
+          elif [ "${{ matrix.service.name }}" == "hotel" ]; then
+            echo "${{ secrets.HOTEL_APPLICATION_DEV_YML }}" > ${{ matrix.service.folder }}/src/main/resources/application-dev.yml
+          elif [ "${{ matrix.service.name }}" == "promotion" ]; then
+            echo "${{ secrets.PROMOTION_APPLICATION_DEV_YML }}" > ${{ matrix.service.folder }}/src/main/resources/application-dev.yml
+          elif [ "${{ matrix.service.name }}" == "reservation" ]; then
+            echo "${{ secrets.RESERVATION_APPLICATION_DEV_YML }}" > ${{ matrix.service.folder }}/src/main/resources/application-dev.yml
+          elif [ "${{ matrix.service.name }}" == "payment" ]; then
+            echo "${{ secrets.PAYMENT_APPLICATION_DEV_YML }}" > ${{ matrix.service.folder }}/src/main/resources/application-dev.yml
+          fi
+
+      - name: Build with Gradle
+        if: ${{ contains(env.services_to_build, matrix.service.folder) }}
+        run: |
+          cd ${{ matrix.service.folder }}
+          chmod +x gradlew
+          ./gradlew clean 
+          ./gradlew build -x test --no-daemon
+
+      - name: Build Docker Image
+        if: ${{ contains(env.services_to_build, matrix.service.folder) }}
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        run: |
+          cd ${{ matrix.service.folder }}
+          docker buildx build -t $DOCKER_USERNAME/bkmarriott-${{ matrix.service.name }}:latest .
+
+      - name: Push Docker Image
+        if: ${{ contains(env.services_to_build, matrix.service.folder) }}
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: |
+          echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+          docker push $DOCKER_USERNAME/bkmarriott-${{ matrix.service.name }}:latest
+
+      - name: Deploy Docker Image to EC2
+        if: ${{ contains(env.services_to_build, matrix.service.folder) }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          EC2_SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          EC2_INSTANCE_IP: ${{ secrets.EC2_INSTANCE_IP }}
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: |
+          # Set up SSH Key for EC2 instance
+          echo "$EC2_SSH_PRIVATE_KEY" > private_key.pem
+          chmod 600 private_key.pem
+          
+          case ${{ matrix.service.name }} in
+            "eureka")
+              SERVICE_PORT=${{ secrets.EUREKA_PORT }}
+            ;;
+            "gateway")
+              SERVICE_PORT=${{ secrets.GATEWAY_PORT }}
+            ;;
+            "auth")
+              SERVICE_PORT=${{ secrets.AUTH_PORT }}
+            ;;
+            "coupon")
+              SERVICE_PORT=${{ secrets.COUPON_PORT }}
+            ;;
+            "charge")
+              SERVICE_PORT=${{ secrets.CHARGE_PORT }}
+            ;;
+            "promotion")
+              SERVICE_PORT=${{ secrets.PROMOTION_PORT }}
+            ;;
+            "hotel")
+              SERVICE_PORT=${{ secrets.HOTEL_PORT }}
+            ;;
+            "reservation")
+              SERVICE_PORT=${{ secrets.RESERVATION_PORT }}
+            ;;
+            "payment")
+                SERVICE_PORT=${{ secrets.PAYMENT_PORT }}
+            ;;
+          esac
+          
+          # SSH into EC2 and debug Docker variables
+          ssh -i private_key.pem -o StrictHostKeyChecking=no ubuntu@$EC2_INSTANCE_IP << EOF
+            echo "Using Docker image: $DOCKER_USERNAME/bkmarriott-${{ matrix.service.name }}:latest"
+            echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+            sudo docker stop ${{ matrix.service.name }}
+            sudo docker rm ${{ matrix.service.name }}
+            sudo docker pull $DOCKER_USERNAME/bkmarriott-${{ matrix.service.name }}:latest
+            sudo docker run -d --name ${{ matrix.service.name }} -p $SERVICE_PORT:$SERVICE_PORT $DOCKER_USERNAME/bkmarriott-${{ matrix.service.name }}:latest
+          EOF
