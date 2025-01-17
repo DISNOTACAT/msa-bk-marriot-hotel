@@ -3,7 +3,7 @@ package com.bkmarriott.reservationservice.reservation.infrastructure.feignClient
 import com.bkmarriott.reservationservice.reservation.application.outputport.feign.ChargeOutputPort;
 import com.bkmarriott.reservationservice.reservation.domain.vo.InventoryQuery;
 import com.bkmarriott.reservationservice.reservation.infrastructure.feignClient.client.ChargeClient;
-import java.util.stream.Stream;
+import com.bkmarriott.reservationservice.reservation.infrastructure.feignClient.dto.RoomChargeResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -14,11 +14,11 @@ public class ChargeFeignClientAdapter implements ChargeOutputPort {
     private final ChargeClient chargeClient;
 
     @Override
-    public int getRoomCharge(InventoryQuery query) {
+    public int findRoomChargeByDates(InventoryQuery query) {
 
-        return Stream.iterate(query.startDate(), date -> date.plusDays(1))
-            .limit(query.startDate().until(query.endDate()).getDays() + 1)
-            .mapToInt(date -> chargeClient.getRoomCharge(query.hotelId(), query.roomType(), date).charge())
+        return chargeClient.findRoomChargeByDates(query.hotelId(), query.roomType(), query.startDate(), query.endDate())
+            .stream()
+            .mapToInt(RoomChargeResponse::charge)
             .sum();
     }
 

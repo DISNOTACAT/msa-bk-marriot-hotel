@@ -40,7 +40,7 @@ public class InventoryQueryService {
   }
 
   private AvailableRoomsWithChargeDto setRoomCharge(InventorySearchRequestDto searchDto, AvailableRoomCountDto roomCountDto) {
-          int charge = chargeOutputPort.getRoomCharge(InventoryQuery.of(searchDto, roomCountDto.getRoomType()));
+          int charge = chargeOutputPort.findRoomChargeByDates(InventoryQuery.of(searchDto, roomCountDto.getRoomType()));
           return new AvailableRoomsWithChargeDto(roomCountDto.getRoomType(), roomCountDto.getCount(), charge);
   }
 }
