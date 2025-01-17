@@ -4,8 +4,8 @@ import com.bkmarriott.reservationservice.reservation.domain.Inventory;
 import com.bkmarriott.reservationservice.reservation.domain.Reservation;
 import com.bkmarriott.reservationservice.reservation.domain.vo.ReservationStatus;
 import com.bkmarriott.reservationservice.reservation.domain.vo.RoomType;
-import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.adapter.InventoryCommandAdaptor;
-import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.repository.InventoryQueryDslRepository;
+import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.adapter.inventory.InventoryCommandAdaptor;
+import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.repository.inventory.InventoryQueryDslRepository;
 import com.bkmarriott.reservationservice.reservation.presentation.infrastructure.persistence.config.RepositoryTest;
 import java.time.LocalDate;
 import java.util.List;
@@ -31,7 +31,7 @@ class InventoryCommandAdaptorTest {
     //Given
     Reservation reservation = testReservation();
     //When
-    List<Inventory> actual = inventoryCommandAdaptor.increaseReserved(reservation);
+    List<Inventory> actual = inventoryCommandAdaptor.increaseReservedInventory(reservation);
     //Then
     Assertions.assertAll(
         () -> Assertions.assertEquals(reservation.getHotelId(), actual.get(0).getHotelId()),
@@ -47,7 +47,7 @@ class InventoryCommandAdaptorTest {
     //Given
     Reservation reservation = testReservation();
     //When
-    List<Inventory> actual = inventoryCommandAdaptor.decreaseReserved(reservation);
+    List<Inventory> actual = inventoryCommandAdaptor.decreaseReservedInventory(reservation);
     //Then
     Assertions.assertAll(
         () -> Assertions.assertEquals(reservation.getHotelId(), actual.get(0).getHotelId()),

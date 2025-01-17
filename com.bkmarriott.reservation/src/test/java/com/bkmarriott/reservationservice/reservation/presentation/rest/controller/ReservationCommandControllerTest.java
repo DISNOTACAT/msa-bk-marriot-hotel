@@ -1,11 +1,12 @@
 package com.bkmarriott.reservationservice.reservation.presentation.rest.controller;
 
-import com.bkmarriott.reservationservice.reservation.application.service.ReservationService;
+import com.bkmarriott.reservationservice.reservation.application.service.reservation.ReservationService;
 import com.bkmarriott.reservationservice.reservation.domain.Reservation;
 import com.bkmarriott.reservationservice.reservation.domain.vo.ReservationForCreate;
 import com.bkmarriott.reservationservice.reservation.domain.vo.ReservationStatus;
 import com.bkmarriott.reservationservice.reservation.domain.vo.RoomType;
-import com.bkmarriott.reservationservice.reservation.presentation.rest.dto.command.ReservationCreationDTO;
+import com.bkmarriott.reservationservice.reservation.presentation.rest.controller.reservation.ReservationCommandController;
+import com.bkmarriott.reservationservice.reservation.presentation.rest.dto.reservation.ReservationCreationDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

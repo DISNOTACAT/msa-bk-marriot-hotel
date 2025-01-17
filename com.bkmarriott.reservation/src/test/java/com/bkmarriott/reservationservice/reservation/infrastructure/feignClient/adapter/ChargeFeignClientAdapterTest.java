@@ -1,7 +1,7 @@
-package com.bkmarriott.reservationservice.reservation.infrastructure.adapter;
+package com.bkmarriott.reservationservice.reservation.infrastructure.feignClient.adapter;
 
+import com.bkmarriott.reservationservice.reservation.domain.vo.InventoryQuery;
 import com.bkmarriott.reservationservice.reservation.domain.vo.RoomType;
-import com.bkmarriott.reservationservice.reservation.infrastructure.feignClient.adapter.ChargeFeignClientAdapter;
 import com.bkmarriott.reservationservice.reservation.infrastructure.feignClient.client.ChargeClient;
 import com.bkmarriott.reservationservice.reservation.infrastructure.feignClient.dto.RoomChargeResponse;
 import java.time.LocalDate;
@@ -39,7 +39,7 @@ class ChargeFeignClientAdapterTest {
             ArgumentMatchers.any(LocalDate.class))).thenReturn(response);
 
         // When
-        int actual = chargeFeignClientAdapter.getRoomCharge(hotelId,roomType,startDate,endDate);
+        int actual = chargeFeignClientAdapter.getRoomCharge(new InventoryQuery(hotelId,startDate,endDate,roomType));
 
         // Then
         Assertions.assertAll(
