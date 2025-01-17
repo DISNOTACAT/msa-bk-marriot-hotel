@@ -1,9 +1,9 @@
-package com.bkmarriott.reservationservice.reservation.presentation.rest.controller;
+package com.bkmarriott.reservationservice.reservation.presentation.rest.controller.reservation;
 
-import com.bkmarriott.reservationservice.reservation.application.service.ReservationService;
+import com.bkmarriott.reservationservice.reservation.application.service.reservation.ReservationService;
 import com.bkmarriott.reservationservice.reservation.domain.Reservation;
 import com.bkmarriott.reservationservice.reservation.presentation.rest.dto.auth.Actor;
-import com.bkmarriott.reservationservice.reservation.presentation.rest.dto.command.ReservationCreationDTO;
+import com.bkmarriott.reservationservice.reservation.presentation.rest.dto.reservation.ReservationCreationDTO;
 import com.bkmarriott.reservationservice.reservation.presentation.rest.util.auth.LoginActor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
