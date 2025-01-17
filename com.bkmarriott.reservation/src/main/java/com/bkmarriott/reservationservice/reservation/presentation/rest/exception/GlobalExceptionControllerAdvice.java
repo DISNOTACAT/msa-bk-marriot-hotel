@@ -14,13 +14,19 @@ public class GlobalExceptionControllerAdvice {
 
   @ExceptionHandler(ResourceNotFoundException.class)
   public ResponseEntity<Error> exceptionHandle(ResourceNotFoundException exception) {
-    log.error("ResourceNotFoundException Handle={}", exception);
+    log.error("[GlobalExceptionControllerAdvice] [ResourceNotFoundException] ::: {}", exception);
     return ApiResponse.error(HttpStatus.NOT_FOUND, exception.getMessage());
+  }
+
+  @ExceptionHandler(InvalidAccessException.class)
+  public ResponseEntity<Error> exceptionHandle(InvalidAccessException exception) {
+    log.error("[GlobalExceptionControllerAdvice] [InvalidAccessException] ::: {}", exception);
+    return ApiResponse.error(HttpStatus.UNAUTHORIZED, exception.getMessage());
   }
 
   @ExceptionHandler(Exception.class)
   public ResponseEntity<Error> exceptionHandle(Exception exception) {
-    log.error("ExceptionHadnle={}", exception);
+    log.error("[GlobalExceptionControllerAdvice] [ExceptionHadnle] ::: {}", exception);
     return ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage());
   }
 }
