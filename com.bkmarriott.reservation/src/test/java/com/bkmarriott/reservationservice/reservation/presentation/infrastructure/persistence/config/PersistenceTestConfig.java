@@ -1,11 +1,11 @@
 package com.bkmarriott.reservationservice.reservation.presentation.infrastructure.persistence.config;
 
-import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.adapter.InventoryCommandAdaptor;
-import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.adapter.InventoryQueryAdaptor;
-import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.adapter.ReservationCommandAdapter;
-import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.adapter.ReservationQueryAdaptor;
-import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.repository.InventoryQueryDslRepository;
-import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.repository.InventoryRepository;
+import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.adapter.inventory.InventoryCommandAdaptor;
+import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.adapter.inventory.InventoryQueryAdaptor;
+import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.adapter.reservation.ReservationCommandAdapter;
+import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.adapter.reservation.ReservationQueryAdaptor;
+import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.repository.inventory.InventoryQueryDslRepository;
+import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.repository.inventory.InventoryRepository;
 import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.repository.ReservationRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;

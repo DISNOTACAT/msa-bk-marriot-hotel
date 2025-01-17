@@ -6,7 +6,7 @@ import com.bkmarriott.reservationservice.reservation.domain.vo.PaymentForCreate;
 import com.bkmarriott.reservationservice.reservation.domain.vo.ReservationForCreate;
 import com.bkmarriott.reservationservice.reservation.domain.vo.ReservationStatus;
 import com.bkmarriott.reservationservice.reservation.domain.vo.RoomType;
-import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.adapter.ReservationCommandAdapter;
+import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.adapter.reservation.ReservationCommandAdapter;
 import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.entity.ReservationEntity;
 import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.repository.ReservationRepository;
 import com.bkmarriott.reservationservice.reservation.presentation.infrastructure.persistence.config.RepositoryTest;

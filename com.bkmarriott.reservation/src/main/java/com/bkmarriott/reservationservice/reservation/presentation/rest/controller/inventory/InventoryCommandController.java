@@ -1,7 +1,7 @@
-package com.bkmarriott.reservationservice.reservation.presentation.rest.controller;
+package com.bkmarriott.reservationservice.reservation.presentation.rest.controller.inventory;
 
-import com.bkmarriott.reservationservice.reservation.application.service.InventoryService;
-import com.bkmarriott.reservationservice.reservation.presentation.rest.dto.command.InventoryModification.Response;
+import com.bkmarriott.reservationservice.reservation.application.service.inventory.InventoryService;
+import com.bkmarriott.reservationservice.reservation.presentation.rest.dto.inventory.response.InventoryModificationResponse;
 import com.bkmarriott.reservationservice.reservation.presentation.rest.util.reponse.ApiResponse;
 import com.bkmarriott.reservationservice.reservation.presentation.rest.util.reponse.ApiResponse.Success;
 import java.util.List;
@@ -21,10 +21,10 @@ public class InventoryCommandController {
   private final InventoryService inventoryService;
 
   @PatchMapping
-  public ResponseEntity<Success<List<Response>>> updateInventory(@RequestParam Long reservationId) {
+  public ResponseEntity<Success<List<InventoryModificationResponse>>> updateInventory(@RequestParam Long reservationId) {
 
-    List<Response> responseList = inventoryService.updateTotalReserved(reservationId)
-        .stream().map(Response::from).toList();
+    List<InventoryModificationResponse> responseList = inventoryService.updateTotalReservedInventory(reservationId)
+        .stream().map(InventoryModificationResponse::from).toList();
 
     return ApiResponse.success(responseList, HttpStatus.OK);
   }

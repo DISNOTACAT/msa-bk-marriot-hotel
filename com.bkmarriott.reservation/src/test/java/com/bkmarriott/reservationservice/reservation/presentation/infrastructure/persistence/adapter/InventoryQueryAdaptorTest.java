@@ -1,15 +1,15 @@
 package com.bkmarriott.reservationservice.reservation.presentation.infrastructure.persistence.adapter;
 
-import com.bkmarriott.reservationservice.reservation.application.dto.InventoryQueryRequestDto;
-import com.bkmarriott.reservationservice.reservation.application.dto.InventoryQueryResponseDto;
+import com.bkmarriott.reservationservice.reservation.application.dto.AvailableRoomCountDto;
+import com.bkmarriott.reservationservice.reservation.domain.vo.InventoryDateQuery;
 import com.bkmarriott.reservationservice.reservation.domain.vo.InventoryQuery;
 import com.bkmarriott.reservationservice.reservation.domain.Inventory;
 import com.bkmarriott.reservationservice.reservation.domain.vo.RoomType;
 import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.entity.RoomEntityType;
 import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.entity.RoomTypeInventoryEntity;
 import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.entity.RoomTypeInventoryId;
-import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.repository.InventoryQueryDslRepository;
-import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.repository.InventoryRepository;
+import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.repository.inventory.InventoryQueryDslRepository;
+import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.repository.inventory.InventoryRepository;
 import com.bkmarriott.reservationservice.reservation.presentation.infrastructure.persistence.config.RepositoryTest;
 import java.time.LocalDate;
 import java.util.List;
@@ -52,27 +52,23 @@ class InventoryQueryAdaptorTest {
   @DisplayName("[인벤토리 예약 가능 객실 수 조회 성공 테스트] 호텔 아이디와 숙박 일자가 주어졌을 시, 예약 가능한 타입별 객실 수를 반환한다.")
   void find_availble_quantity_successTest() {
 
-    Long hotelId = 101L;
-    LocalDate startDate = LocalDate.of(2025, 2, 1);
-    LocalDate endDate = LocalDate.of(2025, 2, 2);
+    InventoryDateQuery query = new InventoryDateQuery(101L, LocalDate.parse("2025-02-01"), LocalDate.parse("2025-02-02"));
 
-    InventoryQueryRequestDto requestDto = new InventoryQueryRequestDto(hotelId, startDate, endDate);
-
-    List<InventoryQueryResponseDto> mockResponse = List.of(
-        new InventoryQueryResponseDto(RoomEntityType.DELUXE, 300),
-        new InventoryQueryResponseDto(RoomEntityType.STANDARD, 70),
-        new InventoryQueryResponseDto(RoomEntityType.SUITE, 60),
-        new InventoryQueryResponseDto(RoomEntityType.TWIN, 50)
+    List<AvailableRoomCountDto> mockResponse = List.of(
+        new AvailableRoomCountDto(RoomEntityType.DELUXE, 300),
+        new AvailableRoomCountDto(RoomEntityType.STANDARD, 70),
+        new AvailableRoomCountDto(RoomEntityType.SUITE, 60),
+        new AvailableRoomCountDto(RoomEntityType.TWIN, 50)
     );
 
     // When
-    List<InventoryQueryResponseDto> actual = inventoryQueryDslRepository.findAvailableRoomsByHotelIdAndDateRange(
-        requestDto);
+    List<AvailableRoomCountDto> actual = inventoryQueryDslRepository.findAvailableRoomsByHotelIdAndDateRange(
+        query);
 
     // Then
     Assertions.assertAll(
-        () -> Assertions.assertEquals(actual.get(0).getRoomType(), mockResponse.get(0).getRoomType()),
-        () -> Assertions.assertEquals(actual.get(0).getQuantity(), mockResponse.get(0).getQuantity())
+        () -> Assertions.assertEquals(mockResponse.get(0).getRoomType(), actual.get(0).getRoomType()),
+        () -> Assertions.assertEquals(mockResponse.get(0).getCount(), actual.get(0).getCount())
     );
   }
 
@@ -112,15 +108,15 @@ class InventoryQueryAdaptorTest {
   @DisplayName("[인벤토리 조회 성공 테스트] 숙박 조회 기간이 주어질 경우 해당 기간의 가용 객실 정보를 반환한다.")
   void findInventoryFromReservation_successTest() {
 
-    InventoryQueryRequestDto requestDto = new InventoryQueryRequestDto(101L, LocalDate.of(2025, 2, 1), LocalDate.of(2025, 2, 2));
+    InventoryDateQuery query = new InventoryDateQuery(101L, LocalDate.parse("2025-02-01"), LocalDate.parse("2025-02-02"));
 
     // When
-    List<InventoryQueryResponseDto> actual = inventoryQueryDslRepository.findAvailableRoomsByHotelIdAndDateRange(requestDto);
+    List<AvailableRoomCountDto> actual = inventoryQueryDslRepository.findAvailableRoomsByHotelIdAndDateRange(query);
 
     // Then
     Assertions.assertAll(
         () -> Assertions.assertEquals(RoomType.DELUXE, actual.get(0).getRoomType()),
-        () -> Assertions.assertEquals(300, actual.get(0).getQuantity())
+        () -> Assertions.assertEquals(300, actual.get(0).getCount())
     );
   }
 }

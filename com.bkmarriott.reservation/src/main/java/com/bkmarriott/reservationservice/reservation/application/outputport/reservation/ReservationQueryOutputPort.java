@@ -1,4 +1,4 @@
-package com.bkmarriott.reservationservice.reservation.application.outputport;
+package com.bkmarriott.reservationservice.reservation.application.outputport.reservation;
 
 import com.bkmarriott.reservationservice.reservation.domain.Reservation;
 import java.util.Optional;

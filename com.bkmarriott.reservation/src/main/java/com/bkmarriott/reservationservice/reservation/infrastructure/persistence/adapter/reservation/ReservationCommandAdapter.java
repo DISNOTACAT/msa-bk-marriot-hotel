@@ -1,7 +1,7 @@
-package com.bkmarriott.reservationservice.reservation.infrastructure.persistence.adapter;
+package com.bkmarriott.reservationservice.reservation.infrastructure.persistence.adapter.reservation;
 
 import com.bkmarriott.reservationservice.reservation.application.exception.ResourceNotFoundException;
-import com.bkmarriott.reservationservice.reservation.application.outputport.ReservationCommandOutputPort;
+import com.bkmarriott.reservationservice.reservation.application.outputport.reservation.ReservationCommandOutputPort;
 import com.bkmarriott.reservationservice.reservation.domain.Reservation;
 import com.bkmarriott.reservationservice.reservation.domain.vo.ReservationForCreate;
 import com.bkmarriott.reservationservice.reservation.domain.vo.ReservationStatus;

@@ -1,8 +1,9 @@
 package com.bkmarriott.reservationservice.reservation.presentation.rest.controller;
 
-import com.bkmarriott.reservationservice.reservation.application.service.InventoryService;
+import com.bkmarriott.reservationservice.reservation.application.service.inventory.InventoryService;
 import com.bkmarriott.reservationservice.reservation.domain.Inventory;
 import com.bkmarriott.reservationservice.reservation.domain.vo.RoomType;
+import com.bkmarriott.reservationservice.reservation.presentation.rest.controller.inventory.InventoryCommandController;
 import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -41,7 +42,7 @@ class InventoryCommandControllerTest {
         79
     );
 
-    Mockito.when(inventoryService.updateTotalReserved(reservationId))
+    Mockito.when(inventoryService.updateTotalReservedInventory(reservationId))
             .thenReturn(List.of(increase));
 
     //When

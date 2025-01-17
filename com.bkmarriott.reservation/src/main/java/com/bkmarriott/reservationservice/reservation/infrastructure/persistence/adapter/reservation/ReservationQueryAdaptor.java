@@ -1,6 +1,6 @@
-package com.bkmarriott.reservationservice.reservation.infrastructure.persistence.adapter;
+package com.bkmarriott.reservationservice.reservation.infrastructure.persistence.adapter.reservation;
 
-import com.bkmarriott.reservationservice.reservation.application.outputport.ReservationQueryOutputPort;
+import com.bkmarriott.reservationservice.reservation.application.outputport.reservation.ReservationQueryOutputPort;
 import com.bkmarriott.reservationservice.reservation.domain.Reservation;
 import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.entity.ReservationEntity;
 import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.repository.ReservationRepository;

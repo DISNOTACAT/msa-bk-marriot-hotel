@@ -6,14 +6,14 @@ import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
 
 @Getter
-public class InventoryQueryResponseDto {
+public class AvailableRoomCountDto {
 
   private RoomType roomType;
-  private int quantity;
+  private int count;
 
   @QueryProjection
-  public InventoryQueryResponseDto(RoomEntityType roomType, int quantity) {
+  public AvailableRoomCountDto(RoomEntityType roomType, int count) {
     this.roomType = roomType.toDomain();
-    this.quantity = quantity;
+    this.count = count;
   }
 }

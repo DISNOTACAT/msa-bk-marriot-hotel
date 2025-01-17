@@ -1,7 +1,8 @@
-package com.bkmarriott.reservationservice.reservation.presentation.rest.controller;
+package com.bkmarriott.reservationservice.reservation.presentation.rest.controller.inventory;
 
-import com.bkmarriott.reservationservice.reservation.application.service.InventoryService;
-import com.bkmarriott.reservationservice.reservation.presentation.rest.dto.query.InventoryQuery;
+import com.bkmarriott.reservationservice.reservation.application.dto.InventorySearchRequestDto;
+import com.bkmarriott.reservationservice.reservation.application.service.inventory.InventoryQueryService;
+import com.bkmarriott.reservationservice.reservation.presentation.rest.dto.inventory.response.InventorySearchResponse;
 import com.bkmarriott.reservationservice.reservation.presentation.rest.util.reponse.ApiResponse;
 import com.bkmarriott.reservationservice.reservation.presentation.rest.util.reponse.ApiResponse.Success;
 import java.time.LocalDate;
@@ -19,15 +20,20 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/reservations/inventories")
 public class InventoryQueryController {
 
-  private final InventoryService inventoryService;
+  private final InventoryQueryService inventoryService;
 
   @GetMapping
-  public ResponseEntity<Success<List<InventoryQuery.Response>>> getInventoryQuantity(
+  public ResponseEntity<Success<List<InventorySearchResponse>>> getInventoryQuantity(
       @RequestParam Long hotelId,
       @RequestParam LocalDate startDate,
       @RequestParam LocalDate endDate) {
 
-    List<InventoryQuery.Response> responseList = inventoryService.getInventoryQuantity(hotelId,startDate,endDate);
+    List<InventorySearchResponse> responseList = inventoryService.getAvailableRoomsWithCharge(
+        InventorySearchRequestDto.builder()
+            .hotelId(hotelId)
+            .startDate(startDate)
+            .endDate(endDate)
+            .build());
 
     return ApiResponse.success(responseList, HttpStatus.OK);
   }

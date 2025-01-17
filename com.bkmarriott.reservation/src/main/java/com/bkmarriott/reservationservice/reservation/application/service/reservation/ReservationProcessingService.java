@@ -1,11 +1,12 @@
-package com.bkmarriott.reservationservice.reservation.application.service;
+package com.bkmarriott.reservationservice.reservation.application.service.reservation;
 
 import com.bkmarriott.reservationservice.reservation.application.exception.PaymentException;
 import com.bkmarriott.reservationservice.reservation.application.exception.ReservationProcessingException;
-import com.bkmarriott.reservationservice.reservation.application.outputport.ReservationCommandOutputPort;
+import com.bkmarriott.reservationservice.reservation.application.outputport.reservation.ReservationCommandOutputPort;
 import com.bkmarriott.reservationservice.reservation.application.outputport.cache.InventoryCacheOutputPort;
 import com.bkmarriott.reservationservice.reservation.application.outputport.feign.CouponOutputPort;
 import com.bkmarriott.reservationservice.reservation.application.outputport.feign.PaymentOutputPort;
+import com.bkmarriott.reservationservice.reservation.application.service.inventory.InventoryService;
 import com.bkmarriott.reservationservice.reservation.domain.Reservation;
 import com.bkmarriott.reservationservice.reservation.domain.vo.*;
 import lombok.RequiredArgsConstructor;
@@ -60,7 +61,7 @@ public class ReservationProcessingService {
         log.info("[ReservationProcessingService] [confirmReservation] reservationId ::: {}", reservation.getReservationId());
         try{
             // 1. Inventory 수정
-            inventoryService.updateTotalReserved(reservation.getReservationId());
+            inventoryService.updateTotalReservedInventory(reservation.getReservationId());
 
             // 2. 쿠폰 사용 처리
             Optional.ofNullable(payment.appliedCoupon()).ifPresent(couponOutputPort::useCoupon);
