@@ -34,32 +34,6 @@ public class Inventory {
         .totalReserved(totalReserved)
         .build();
   }
-
-  public static List<Inventory> of(Long hotelId, RoomType roomType, LocalDate startDate, LocalDate endDate) {
-    return getDateRange(startDate, endDate).stream()
-        .map(date -> Inventory.builder()
-            .hotelId(hotelId)
-            .date(date)
-            .roomType(roomType)
-            .build())
-        .toList();
-  }
-
-  public static List<Inventory> from(Reservation reservation) {
-    return getDateRange(reservation.getStartDate(), reservation.getEndDate()).stream()
-        .map(date -> Inventory.builder()
-            .hotelId(reservation.getHotelId())
-            .date(date)
-            .roomType(reservation.getRoomType())
-            .build())
-        .toList();
-  }
-
-  public static List<LocalDate> getDateRange(LocalDate startDate, LocalDate endDate) {
-
-    return startDate.datesUntil(endDate.plusDays(1)).toList();
-  }
-
   public int getAvailableRoomCount(){
     if(totalInventory <= totalReserved) throw new NoAvailableRoomsException("남은 방이 없습니다.");
     return totalInventory - totalReserved;
