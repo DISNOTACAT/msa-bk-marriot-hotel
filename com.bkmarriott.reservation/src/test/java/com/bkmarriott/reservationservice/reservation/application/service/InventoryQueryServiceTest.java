@@ -33,8 +33,6 @@ class InventoryQueryServiceTest {
     @Mock private InventoryQueryOutputPort inventoryQueryOutputPort;
     @Mock private ChargeOutputPort chargeOutputPort;
 
-    @Mock private InventoryCacheOutputPort inventoryCacheOutputPort;
-
 
     @Test
     @DisplayName("[객실 수와 요금 반환 성공 테스트] 요청 기간의 객실 타입별 예약 가능 수와 금액을 반환한다.")
@@ -49,7 +47,7 @@ class InventoryQueryServiceTest {
 
         Mockito.when(inventoryQueryOutputPort.findAvailableRoomTypeAndCount(
             any())).thenReturn(availableRooms);
-        Mockito.when(chargeOutputPort.getRoomCharge(any(InventoryQuery.class)))
+        Mockito.when(chargeOutputPort.findRoomChargeByDates(any(InventoryQuery.class)))
             .thenReturn(charge);
 
         // When
