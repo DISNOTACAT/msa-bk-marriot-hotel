@@ -6,9 +6,9 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class AvailableInventoryWithChargeDto {
+public class AvailableRoomsWithChargeDto {
 
   private RoomType roomType;
-  private int quantity;
+  private int roomCount;
   private int charge;
 }
