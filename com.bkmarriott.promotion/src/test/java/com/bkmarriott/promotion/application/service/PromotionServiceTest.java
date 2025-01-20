@@ -2,7 +2,7 @@ package com.bkmarriott.promotion.application.service;
 
 import static org.assertj.core.api.Assertions.*;
 
-import com.bkmarriott.promotion.application.outputport.PromotionOutputPort;
+import com.bkmarriott.promotion.application.outputport.PromotionReader;
 import com.bkmarriott.promotion.domain.Promotion;
 import com.bkmarriott.promotion.domain.vo.PromotionPeriod;
 import java.time.LocalDateTime;
@@ -27,7 +27,8 @@ class PromotionServiceTest {
     @InjectMocks
     PromotionService promotionService;
 
-    @Mock PromotionOutputPort promotionOutputPort;
+    @Mock
+    PromotionReader promotionOutputPort;
 
     @Test
     @DisplayName("[성공] 프로모션 조회 - 주어진 식별자와 날짜에 진행되는 프로모션이 존재하는 경우 도메인을 반환")

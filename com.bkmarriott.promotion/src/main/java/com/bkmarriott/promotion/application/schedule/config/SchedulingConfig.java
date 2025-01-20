@@ -1,4 +1,4 @@
-package com.bkmarriott.promotion.infrastructure.schedule.config;
+package com.bkmarriott.promotion.application.schedule.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;

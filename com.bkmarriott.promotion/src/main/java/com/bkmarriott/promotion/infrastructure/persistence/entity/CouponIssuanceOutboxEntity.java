@@ -3,6 +3,7 @@ package com.bkmarriott.promotion.infrastructure.persistence.entity;
 
 import com.bkmarriott.promotion.domain.event.CouponIssuanceEvent;
 import com.bkmarriott.promotion.domain.event.DomainEventEnvelop;
+import com.bkmarriott.promotion.infrastructure.persistence.util.EventConverter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -22,8 +23,8 @@ import lombok.NoArgsConstructor;
 public class CouponIssuanceOutboxEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long outboxId;
+    @Column(columnDefinition = "CHAR(36)")
+    private String outboxId;
 
     @Column(nullable = false)
     private String eventType;
@@ -35,25 +36,25 @@ public class CouponIssuanceOutboxEntity {
     private String source;
 
     @Column(nullable = false)
-    private String uuid;
-
-    @Column(nullable = false)
     private LocalDateTime createdAt;
 
     @Column(nullable = false)
     private boolean isPublished;
 
     public static CouponIssuanceOutboxEntity from(
-        DomainEventEnvelop<CouponIssuanceEvent> envelop,
-        String eventJson
+        DomainEventEnvelop<CouponIssuanceEvent> envelop, String eventJson
     ) {
         return new CouponIssuanceOutboxEntity(
-            null, envelop.getEventType(), eventJson, envelop.getSource(),
-            envelop.getEventId().toString(), envelop.getCreatedAt(), false
+            String.valueOf(envelop.getEventId()), envelop.getEventType(), eventJson,
+            envelop.getSource(), envelop.getCreatedAt(), false
         );
     }
 
     public void toPublished() {
         isPublished = true;
+    }
+
+    public DomainEventEnvelop<CouponIssuanceEvent> toEnvelop(EventConverter eventConverter) {
+        return eventConverter.parseToEnvelopFrom(this);
     }
 }

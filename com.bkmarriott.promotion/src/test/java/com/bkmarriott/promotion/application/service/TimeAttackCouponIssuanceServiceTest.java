@@ -1,8 +1,9 @@
 package com.bkmarriott.promotion.application.service;
 
-import com.bkmarriott.promotion.application.outputport.CouponOutputPort;
-import com.bkmarriott.promotion.application.outputport.TimeAttackCouponOutputPort;
+import com.bkmarriott.promotion.application.outputport.CouponExternalEventRecorder;
+import com.bkmarriott.promotion.application.outputport.TimeAttackCouponIssuer;
 import com.bkmarriott.promotion.domain.Promotion;
+import com.bkmarriott.promotion.domain.event.DomainEventEnvelop;
 import com.bkmarriott.promotion.domain.vo.CouponIssuanceResult;
 import com.bkmarriott.promotion.domain.vo.TimeAttackCouponIssuance;
 import java.time.LocalDateTime;
@@ -18,7 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @DisplayName("[Application] [Unit] TimeAttackCouponService Test")
 @ExtendWith(MockitoExtension.class)
-class TimeAttackCouponServiceTest {
+class TimeAttackCouponIssuanceServiceTest {
 
     private static final TimeAttackCouponIssuance MOCK_COUPON_ISSUANCE;
     private static final Promotion MOCK_PROMOTION;
@@ -37,15 +38,16 @@ class TimeAttackCouponServiceTest {
     }
 
     @InjectMocks
-    private TimeAttackCouponService timeAttackCouponService;
+    private TimeAttackCouponIssuanceService timeAttackCouponIssuanceService;
 
     @Mock private PromotionService promotionService;
-    @Mock private TimeAttackCouponOutputPort timeAttackCouponOutputPort;
-    @Mock private CouponOutputPort couponOutputPort;
+    @Mock private TimeAttackCouponIssuer timeAttackCouponOutputPort;
+    @Mock private CouponExternalEventRecorder couponExternalEventRecorder;
+    @Mock private ApplicationEventPublishService applicationEventPublishService;
 
     @Test
     @DisplayName("[성공] 선착순 쿠폰 발급 테스트 - 선착순 내에 신청하고 중복되지 않은 경우 true 반환")
-    void issueTimeAttackCoupon_successTest_successToIssuance() {
+    void issue_successTest_successToIssuance() {
         // Given
         Mockito.when(MOCK_COUPON_ISSUANCE_RESULT.isSuccess(Mockito.any())).thenReturn(true);
 
@@ -56,9 +58,8 @@ class TimeAttackCouponServiceTest {
         Mockito.when(timeAttackCouponOutputPort.tryIssuance(
             ArgumentMatchers.any(TimeAttackCouponIssuance.class)
         )).thenReturn(MOCK_COUPON_ISSUANCE_RESULT);
-
         // When
-        boolean actual = timeAttackCouponService.issueTimeAttackCoupon(MOCK_COUPON_ISSUANCE);
+        boolean actual = timeAttackCouponIssuanceService.issue(MOCK_COUPON_ISSUANCE);
         // Then
         Assertions.assertAll(
             () -> Assertions.assertTrue(actual)
@@ -67,7 +68,7 @@ class TimeAttackCouponServiceTest {
 
     @Test
     @DisplayName("[성공] 선착순 쿠폰 발급 테스트 - 선착순 내에 들지 못했거나 중복된 경우 false 반환")
-    void issueTimeAttackCoupon_successTest_failureToIssuance() {
+    void issue_successTest_failureToIssuance() {
         // Given
         Mockito.when(MOCK_COUPON_ISSUANCE_RESULT.isSuccess(Mockito.any())).thenReturn(false);
 
@@ -78,9 +79,8 @@ class TimeAttackCouponServiceTest {
         Mockito.when(timeAttackCouponOutputPort.tryIssuance(
             ArgumentMatchers.any(TimeAttackCouponIssuance.class)
         )).thenReturn(MOCK_COUPON_ISSUANCE_RESULT);
-
         // When
-        boolean actual = timeAttackCouponService.issueTimeAttackCoupon(MOCK_COUPON_ISSUANCE);
+        boolean actual = timeAttackCouponIssuanceService.issue(MOCK_COUPON_ISSUANCE);
         // Then
         Assertions.assertAll(
             () -> Assertions.assertFalse(actual)

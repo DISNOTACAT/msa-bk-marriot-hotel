@@ -1,6 +1,6 @@
 package com.bkmarriott.promotion.infrastructure.persistence.adapter;
 
-import com.bkmarriott.promotion.application.outputport.PromotionOutputPort;
+import com.bkmarriott.promotion.application.outputport.PromotionReader;
 import com.bkmarriott.promotion.domain.Promotion;
 import com.bkmarriott.promotion.infrastructure.persistence.entity.PromotionEntity;
 import com.bkmarriott.promotion.infrastructure.persistence.repository.PromotionRepository;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
-public class PromotionPersistenceAdapter implements PromotionOutputPort {
+public class PromotionPersistenceAdapter implements PromotionReader {
 
     private final PromotionRepository promotionRepository;
 

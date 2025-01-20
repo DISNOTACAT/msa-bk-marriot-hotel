@@ -1,8 +1,6 @@
 package com.bkmarriott.promotion.presentation.rest.controller;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import com.bkmarriott.promotion.application.service.TimeAttackCouponService;
+import com.bkmarriott.promotion.application.service.TimeAttackCouponIssuanceService;
 import com.bkmarriott.promotion.domain.vo.TimeAttackCouponIssuance;
 import com.bkmarriott.promotion.presentation.rest.dto.TimeAttackCouponRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,7 +24,7 @@ class TimeAttackCouponControllerTest {
     private ObjectMapper objectMapper;
 
     @MockitoBean
-    private TimeAttackCouponService timeAttackCouponService;
+    private TimeAttackCouponIssuanceService timeAttackCouponIssuanceService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -40,7 +38,7 @@ class TimeAttackCouponControllerTest {
             new TimeAttackCouponRequest(1L)
         );
 
-        Mockito.when(timeAttackCouponService.issueTimeAttackCoupon(ArgumentMatchers.any(
+        Mockito.when(timeAttackCouponIssuanceService.issue(ArgumentMatchers.any(
             TimeAttackCouponIssuance.class
         ))).thenReturn(true);
 
@@ -63,7 +61,7 @@ class TimeAttackCouponControllerTest {
             new TimeAttackCouponRequest(1L)
         );
 
-        Mockito.when(timeAttackCouponService.issueTimeAttackCoupon(ArgumentMatchers.any(
+        Mockito.when(timeAttackCouponIssuanceService.issue(ArgumentMatchers.any(
             TimeAttackCouponIssuance.class
         ))).thenReturn(false);
 

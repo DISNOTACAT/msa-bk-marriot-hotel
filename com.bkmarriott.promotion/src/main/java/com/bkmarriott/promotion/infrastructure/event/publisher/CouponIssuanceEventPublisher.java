@@ -1,4 +1,4 @@
-package com.bkmarriott.promotion.infrastructure.event.adapter;
+package com.bkmarriott.promotion.infrastructure.event.publisher;
 
 import com.bkmarriott.promotion.domain.event.CouponIssuanceEvent;
 import com.bkmarriott.promotion.domain.event.DomainEvent;
@@ -25,6 +25,6 @@ public class CouponIssuanceEventPublisher {
         CompletableFuture<SendResult<String, DomainEventEnvelop<? extends DomainEvent>>> result
             = kafkaTemplate.send(couponIssuanceTopic, eventEnvelop);
 
-        log.debug("[CouponIssuanceEventPublisher] [publish] eventType ::: {}, result ::: {}", eventEnvelop.getEventType(), result.isDone());
+        log.info("[CouponIssuanceEventPublisher] [publish] eventType ::: {}, result ::: {}", eventEnvelop.getEventType(), result.isDone());
     }
 }

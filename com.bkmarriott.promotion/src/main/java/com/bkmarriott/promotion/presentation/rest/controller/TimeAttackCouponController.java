@@ -1,6 +1,6 @@
 package com.bkmarriott.promotion.presentation.rest.controller;
 
-import com.bkmarriott.promotion.application.service.TimeAttackCouponService;
+import com.bkmarriott.promotion.application.service.TimeAttackCouponIssuanceService;
 import com.bkmarriott.promotion.domain.vo.TimeAttackCouponIssuance;
 import com.bkmarriott.promotion.presentation.rest.dto.TimeAttackCouponRequest;
 import com.bkmarriott.promotion.presentation.rest.dto.auth.Actor;
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class TimeAttackCouponController {
 
-    private final TimeAttackCouponService couponService;
+    private final TimeAttackCouponIssuanceService timeAttackCouponIssuanceService;
 
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/issuance")
@@ -31,6 +31,6 @@ public class TimeAttackCouponController {
         log.debug("[TimeAttackCouponController] [timeAttackCouponIssuance] promotionId ::: {}, requestUser ::: {}", request.getPromotionId(), actor.userId());
 
         TimeAttackCouponIssuance promotion = request.toDomain(actor.userId());
-        return couponService.issueTimeAttackCoupon(promotion);
+        return timeAttackCouponIssuanceService.issue(promotion);
     }
 }

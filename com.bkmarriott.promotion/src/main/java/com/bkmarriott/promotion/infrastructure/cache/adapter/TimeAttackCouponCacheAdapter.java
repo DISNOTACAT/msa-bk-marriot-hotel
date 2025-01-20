@@ -1,6 +1,6 @@
 package com.bkmarriott.promotion.infrastructure.cache.adapter;
 
-import com.bkmarriott.promotion.application.outputport.TimeAttackCouponOutputPort;
+import com.bkmarriott.promotion.application.outputport.TimeAttackCouponIssuer;
 import com.bkmarriott.promotion.domain.vo.CouponIssuanceResult;
 import com.bkmarriott.promotion.domain.vo.TimeAttackCouponIssuance;
 import com.bkmarriott.promotion.infrastructure.cache.operation.RedisTransaction;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class TimeAttackCouponCacheAdapter implements TimeAttackCouponOutputPort {
+public class TimeAttackCouponCacheAdapter implements TimeAttackCouponIssuer {
 
     private static final Long ADD_FAILURE_VALUE = 0L;
 
