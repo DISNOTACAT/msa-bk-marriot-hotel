@@ -11,9 +11,9 @@ public class HotelSearchResponseDto{
         private String country;
         private String address;
         private String description;
-        private int charge;
+        private Integer charge;
 
-    public HotelSearchResponseDto(Hotel hotel, int roomCharge) {
+    public HotelSearchResponseDto(Hotel hotel, Integer roomCharge) {
         this.hotelId = hotel.getHotelId();
         this.name = hotel.getName();
         this.city = hotel.getCity();

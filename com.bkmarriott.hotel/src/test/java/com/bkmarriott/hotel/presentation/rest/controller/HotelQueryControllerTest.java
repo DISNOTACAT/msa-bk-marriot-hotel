@@ -1,7 +1,7 @@
 package com.bkmarriott.hotel.presentation.rest.controller;
 
 import com.bkmarriott.hotel.application.dto.HotelSearchResponseDto;
-import com.bkmarriott.hotel.application.service.HotelService;
+import com.bkmarriott.hotel.application.service.HotelQueryService;
 import com.bkmarriott.hotel.domain.Hotel;
 import com.bkmarriott.hotel.presentation.rest.dto.request.HotelSearchRequest;
 import org.junit.jupiter.api.DisplayName;
@@ -22,15 +22,15 @@ import java.util.List;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
-@WebMvcTest(HotelController.class)
+@WebMvcTest(HotelQueryController.class)
 @DisplayName("[Presentation] HotelController Unit Test")
-public class HotelControllerTest {
+public class HotelQueryControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @MockitoBean
-    private HotelService hotelService;
+    private HotelQueryService hotelQueryService;
 
     @Test
     @DisplayName("[호텔 검색 성공 테스트] 호텔을 검색한다.")
@@ -47,7 +47,7 @@ public class HotelControllerTest {
         Page<HotelSearchResponseDto> mockResponse = new PageImpl<>(List.of(
                 new HotelSearchResponseDto(new Hotel(1L,"Marriott Hotel Seoul","South Korea", "Seoul", "address", "description"), 10000)
         ));
-        Mockito.when(hotelService.searchHotel(ArgumentMatchers.any(HotelSearchRequest.class), ArgumentMatchers.any(Pageable.class)))
+        Mockito.when(hotelQueryService.searchHotel(ArgumentMatchers.any(HotelSearchRequest.class), ArgumentMatchers.any(Pageable.class)))
                         .thenReturn(mockResponse);
 
         // When
@@ -79,7 +79,7 @@ public class HotelControllerTest {
         Page<HotelSearchResponseDto> mockResponse = new PageImpl<>(List.of(
                 new HotelSearchResponseDto(new Hotel(1L,"Marriott Hotel Seoul","South Korea", "Seoul", "address", "description"), 10000)
         ));
-        Mockito.when(hotelService.searchHotel(ArgumentMatchers.any(HotelSearchRequest.class), ArgumentMatchers.any(Pageable.class)))
+        Mockito.when(hotelQueryService.searchHotel(ArgumentMatchers.any(HotelSearchRequest.class), ArgumentMatchers.any(Pageable.class)))
                 .thenReturn(mockResponse);
 
         // When

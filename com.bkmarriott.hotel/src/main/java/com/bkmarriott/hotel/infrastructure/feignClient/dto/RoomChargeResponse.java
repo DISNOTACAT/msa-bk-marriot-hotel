@@ -5,7 +5,7 @@ import java.time.LocalDate;
 public record RoomChargeResponse(
         Long hotelId,
         RoomType roomType,
-        int charge,
+        Integer charge,
         LocalDate date
 ) {
 }

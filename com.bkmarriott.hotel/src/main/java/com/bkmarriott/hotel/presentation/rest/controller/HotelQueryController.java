@@ -1,6 +1,6 @@
 package com.bkmarriott.hotel.presentation.rest.controller;
 
-import com.bkmarriott.hotel.application.service.HotelService;
+import com.bkmarriott.hotel.application.service.HotelQueryService;
 import com.bkmarriott.hotel.presentation.rest.dto.request.HotelSearchRequest;
 import com.bkmarriott.hotel.presentation.rest.dto.response.HotelSearchResponse;
 import jakarta.validation.Valid;
@@ -17,13 +17,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/hotels")
-public class HotelController {
+public class HotelQueryController {
 
-    private final HotelService hotelService;
+    private final HotelQueryService hotelQueryService;
 
     @GetMapping
     public ResponseEntity<Page<HotelSearchResponse>> searchHotel(@Valid HotelSearchRequest searchRequest, @PageableDefault Pageable pageable){
 
-        return ResponseEntity.ok().body(hotelService.searchHotel(searchRequest, pageable).map(HotelSearchResponse::toDto));
+        return ResponseEntity.ok().body(hotelQueryService.searchHotel(searchRequest, pageable).map(HotelSearchResponse::toDto));
     }
 }

@@ -1,7 +1,6 @@
 package com.bkmarriott.hotel.infrastructure.feignClient.adapter;
 
 import com.bkmarriott.hotel.application.outputport.ChargeOutputPort;
-import com.bkmarriott.hotel.domain.Hotel;
 import com.bkmarriott.hotel.infrastructure.feignClient.client.ChargeClient;
 import com.bkmarriott.hotel.infrastructure.feignClient.dto.RoomChargeResponse;
 import com.bkmarriott.hotel.infrastructure.feignClient.dto.RoomType;
@@ -11,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -21,16 +21,14 @@ public class ChargeFeignClientAdapter implements ChargeOutputPort {
 
     @CircuitBreaker(name ="hotel-service", fallbackMethod = "fallbackGetRoomCharge")
     @Override
-    public int getRoomCharge(Hotel hotel, LocalDate date) {
+    public List<RoomChargeResponse> getRoomCharge(List<Long> hotelIds, LocalDate date) {
 
-        RoomChargeResponse roomCharge = chargeClient.getRoomCharge(hotel.getHotelId(), RoomType.STANDARD, date);
-
-        return roomCharge.charge();
+        return chargeClient.getRoomCharge(hotelIds, RoomType.STANDARD, date);
     }
 
-    public int fallbackGetRoomCharge(Hotel hotel, LocalDate date, Throwable throwable){
+    public List<RoomChargeResponse> fallbackGetRoomCharge(List<Long> hotelIds, LocalDate date, Throwable throwable){
         log.error("[ChargeFeignClientAdapter] [fallbackGetRoomCharge] ErrorMessage ::: {} , ... ", throwable.getMessage());
-        return -1;
+        return List.of();
     }
 
 }

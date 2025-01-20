@@ -12,7 +12,7 @@ public record HotelSearchResponse(
         String country,
         String address,
         String description,
-        int charge
+        Integer charge
 ) {
     public static HotelSearchResponse toDto(HotelSearchResponseDto dto) {
         return new HotelSearchResponse(

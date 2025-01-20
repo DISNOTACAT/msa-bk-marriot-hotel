@@ -1,5 +1,8 @@
 package com.bkmarriott.hotel.domain;
 
+import lombok.Getter;
+
+@Getter
 public class Hotel {
     private Long hotelId;
     private String name;
@@ -16,16 +19,4 @@ public class Hotel {
         this.address = address;
         this.description = description;
     }
-
-    public Long getHotelId() { return hotelId; }
-
-    public String getName() { return name; }
-
-    public String getCountry() { return country; }
-
-    public String getCity() { return city; }
-
-    public String getAddress() { return address; }
-
-    public String getDescription() { return description; }
 }

@@ -7,10 +7,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @FeignClient(name="charge-service")
 public interface ChargeClient {
 
-    @GetMapping("/api/v1/charges")
-    RoomChargeResponse getRoomCharge(@RequestParam Long hotelId, @RequestParam RoomType roomType, @RequestParam LocalDate date);
+    @GetMapping("/api/v1/charges/hotels")
+    List<RoomChargeResponse> getRoomCharge(@RequestParam List<Long> hotelIds, @RequestParam RoomType roomType, @RequestParam LocalDate date);
 }

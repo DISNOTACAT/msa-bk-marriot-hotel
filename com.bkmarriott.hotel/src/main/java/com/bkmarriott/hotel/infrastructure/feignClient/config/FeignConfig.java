@@ -1,4 +1,4 @@
-package com.bkmarriott.hotel.infrastructure.config;
+package com.bkmarriott.hotel.infrastructure.feignClient.config;
 
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Configuration;

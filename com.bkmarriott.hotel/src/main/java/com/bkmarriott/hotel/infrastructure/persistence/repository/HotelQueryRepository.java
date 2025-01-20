@@ -9,6 +9,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -60,11 +61,11 @@ public class HotelQueryRepository {
     }
 
     private BooleanExpression containsHotelName(String name){
-        return (name == null || name.isBlank()) ? null : hotelEntity.name.contains(name);
+        return (StringUtils.isBlank(name)) ? null : hotelEntity.name.contains(name);
     }
 
     private BooleanExpression matchesHotelCity(String city){
-        return (city == null || city.isBlank()) ? null : hotelEntity.city.eq(city);
+        return (StringUtils.isBlank(city)) ? null : hotelEntity.city.eq(city);
     }
 
     private List<OrderSpecifier<?>> getAllOrderSpecifiers(Pageable pageable) {
