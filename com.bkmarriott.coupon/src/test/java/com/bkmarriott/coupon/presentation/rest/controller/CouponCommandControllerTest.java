@@ -28,7 +28,7 @@ class CouponCommandControllerTest {
 
     @Test
     @DisplayName("[성공] 쿠폰 사용 테스트 - 쿠폰 사용 시도 후 쿠폰 정보를 반환")
-    void timeAttackCouponIssuance_successTest_issuanceSuccess() throws Exception {
+    void useUserCoupon_successTest() throws Exception {
         // Given
         String requestUrl = "/api/v1/coupons/user-coupons/1";
 
@@ -41,5 +41,22 @@ class CouponCommandControllerTest {
                 .header("X-User-Id", 1L)
                 .header("X-Role", "CUSTOMER"))
             .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    @DisplayName("[성공] 쿠폰 사용 롤백 테스트 - 쿠폰 사용 취소 후 쿠폰 정보를 반환")
+    void cancelUserCouponUsage_successTest() throws Exception {
+        // Given
+        String requestUrl = "/api/v1/coupons/user-coupons/fail/1";
+
+        Mockito.when(userCouponService.cancelUserCouponUsage(ArgumentMatchers.anyLong()))
+                .thenReturn(Mockito.mock(UserCoupon.class));
+
+        // When & Then
+        mockMvc.perform(MockMvcRequestBuilders.patch(requestUrl)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-User-Id", 1L)
+                        .header("X-Role", "CUSTOMER"))
+                .andExpect(MockMvcResultMatchers.status().isOk());
     }
 }

@@ -112,6 +112,7 @@ public class UserCouponServiceTest {
        );
     }
 
+    @Test
     @DisplayName("[성공] 쿠폰 사용 테스트 - 쿠폰 사용 시각 업데이트")
     void useUserCoupon_successTest() {
         // Given
