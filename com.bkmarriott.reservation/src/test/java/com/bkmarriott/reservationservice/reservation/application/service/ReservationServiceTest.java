@@ -1,6 +1,9 @@
 package com.bkmarriott.reservationservice.reservation.application.service;
 
-import com.bkmarriott.reservationservice.reservation.application.outputport.ReservationCommandOutputPort;
+import com.bkmarriott.reservationservice.reservation.application.outputport.reservation.ReservationCommandOutputPort;
+import com.bkmarriott.reservationservice.reservation.application.service.inventory.InventoryService;
+import com.bkmarriott.reservationservice.reservation.application.service.reservation.ReservationProcessingService;
+import com.bkmarriott.reservationservice.reservation.application.service.reservation.ReservationService;
 import com.bkmarriott.reservationservice.reservation.domain.Reservation;
 import com.bkmarriott.reservationservice.reservation.domain.vo.*;
 import org.junit.jupiter.api.Assertions;

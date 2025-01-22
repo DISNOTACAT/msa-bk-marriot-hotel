@@ -1,6 +1,7 @@
-package com.bkmarriott.reservationservice.reservation.application.service;
+package com.bkmarriott.reservationservice.reservation.application.service.reservation;
 
-import com.bkmarriott.reservationservice.reservation.application.outputport.ReservationCommandOutputPort;
+import com.bkmarriott.reservationservice.reservation.application.outputport.reservation.ReservationCommandOutputPort;
+import com.bkmarriott.reservationservice.reservation.application.service.inventory.InventoryService;
 import com.bkmarriott.reservationservice.reservation.domain.Reservation;
 import com.bkmarriott.reservationservice.reservation.domain.vo.InventoryQuery;
 import com.bkmarriott.reservationservice.reservation.domain.vo.Payment;

@@ -1,5 +1,6 @@
 package com.bkmarriott.reservationservice.reservation.domain.vo;
 
+import com.bkmarriott.reservationservice.reservation.application.dto.InventorySearchRequestDto;
 import com.bkmarriott.reservationservice.reservation.domain.Reservation;
 
 import java.time.LocalDate;
@@ -21,5 +22,9 @@ public record InventoryQuery(
 
     public List<LocalDate> getDateRange(){
         return startDate.datesUntil(endDate.plusDays(1)).toList();
+    }
+
+    public static InventoryQuery of(InventorySearchRequestDto searchDto, RoomType roomType) {
+        return new InventoryQuery(searchDto.getHotelId(), searchDto.getStartDate(), searchDto.getEndDate(), roomType);
     }
 }

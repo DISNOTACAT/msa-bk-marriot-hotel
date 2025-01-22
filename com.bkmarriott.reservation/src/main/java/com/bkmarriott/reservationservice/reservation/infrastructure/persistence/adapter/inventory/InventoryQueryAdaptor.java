@@ -1,15 +1,15 @@
-package com.bkmarriott.reservationservice.reservation.infrastructure.persistence.adapter;
+package com.bkmarriott.reservationservice.reservation.infrastructure.persistence.adapter.inventory;
 
-import com.bkmarriott.reservationservice.reservation.application.dto.InventoryQueryRequestDto;
-import com.bkmarriott.reservationservice.reservation.application.dto.InventoryQueryResponseDto;
-import com.bkmarriott.reservationservice.reservation.application.outputport.InventoryQueryOutputPort;
+import com.bkmarriott.reservationservice.reservation.application.dto.AvailableRoomCountDto;
+import com.bkmarriott.reservationservice.reservation.application.outputport.inventory.InventoryQueryOutputPort;
 import com.bkmarriott.reservationservice.reservation.domain.Inventory;
 import com.bkmarriott.reservationservice.reservation.domain.vo.InventoryQuery;
+import com.bkmarriott.reservationservice.reservation.domain.vo.InventoryDateQuery;
 import com.bkmarriott.reservationservice.reservation.domain.vo.RoomType;
 import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.entity.RoomTypeInventoryEntity;
 import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.entity.RoomTypeInventoryId;
-import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.repository.InventoryQueryDslRepository;
-import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.repository.InventoryRepository;
+import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.repository.inventory.InventoryQueryDslRepository;
+import com.bkmarriott.reservationservice.reservation.infrastructure.persistence.repository.inventory.InventoryRepository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -33,9 +33,9 @@ public class InventoryQueryAdaptor implements InventoryQueryOutputPort {
   }
 
   @Override
-  public List<InventoryQueryResponseDto> findAvailableRoomsByHotelIdAndDateRange(
-      InventoryQueryRequestDto inventoryQueryRequestDto) {
-    return inventoryQueryDslRepository.findAvailableRoomsByHotelIdAndDateRange(inventoryQueryRequestDto);
+  public List<AvailableRoomCountDto> findAvailableRoomTypeAndCount(
+      InventoryDateQuery query) {
+    return inventoryQueryDslRepository.findAvailableRoomsByHotelIdAndDateRange(query);
   }
   @Override
   public List<Inventory> findInventoryFromReservation(InventoryQuery query) {

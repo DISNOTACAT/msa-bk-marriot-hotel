@@ -1,4 +1,4 @@
-package com.bkmarriott.reservationservice.reservation.presentation.rest.dto.command;
+package com.bkmarriott.reservationservice.reservation.presentation.rest.dto.reservation;
 
 import com.bkmarriott.reservationservice.reservation.domain.Reservation;
 import com.bkmarriott.reservationservice.reservation.domain.vo.PaymentForCreate;

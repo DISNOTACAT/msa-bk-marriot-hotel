@@ -1,10 +1,11 @@
-package com.bkmarriott.reservationservice.reservation.infrastructure.adapter;
+package com.bkmarriott.reservationservice.reservation.infrastructure.feignClient.adapter;
 
+import com.bkmarriott.reservationservice.reservation.domain.vo.InventoryQuery;
 import com.bkmarriott.reservationservice.reservation.domain.vo.RoomType;
-import com.bkmarriott.reservationservice.reservation.infrastructure.feignClient.adapter.ChargeFeignClientAdapter;
 import com.bkmarriott.reservationservice.reservation.infrastructure.feignClient.client.ChargeClient;
 import com.bkmarriott.reservationservice.reservation.infrastructure.feignClient.dto.RoomChargeResponse;
 import java.time.LocalDate;
+import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,17 +34,19 @@ class ChargeFeignClientAdapterTest {
         LocalDate startDate = LocalDate.of(2025,2,1);
         LocalDate endDate = LocalDate.of(2025,2,2);
         int charge = 100000;
+        InventoryQuery query = new InventoryQuery(hotelId,startDate,endDate,roomType);
         RoomChargeResponse response = new RoomChargeResponse(hotelId,roomType,charge,startDate);
 
-        Mockito.when(chargeClient.getRoomCharge(ArgumentMatchers.anyLong(),ArgumentMatchers.any(RoomType.class),
-            ArgumentMatchers.any(LocalDate.class))).thenReturn(response);
+        Mockito.when(chargeClient.findRoomChargeByDates(
+            ArgumentMatchers.anyLong(), ArgumentMatchers.any(RoomType.class), ArgumentMatchers.any(LocalDate.class), ArgumentMatchers.any(LocalDate.class)
+            )).thenReturn(List.of(response));
 
         // When
-        int actual = chargeFeignClientAdapter.getRoomCharge(hotelId,roomType,startDate,endDate);
+        int actual = chargeFeignClientAdapter.findRoomChargeByDates(query);
 
         // Then
         Assertions.assertAll(
-                () -> Assertions.assertEquals(response.charge() * 2,actual)
+                () -> Assertions.assertEquals(response.charge(),actual)
         );
     }
 }
