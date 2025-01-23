@@ -4,7 +4,8 @@ import static org.assertj.core.api.Assertions.*;
 
 import com.bkmarriott.coupon.application.outputport.CouponOutputPort;
 import com.bkmarriott.coupon.domain.Coupon;
-import com.bkmarriott.coupon.domain.CouponPolicy;
+import com.bkmarriott.coupon.domain.couponpolicy.CouponPolicy;
+import com.bkmarriott.coupon.domain.couponpolicy.LegacyCouponPolicy;
 import com.bkmarriott.coupon.domain.vo.CouponPolicyType;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -33,7 +34,7 @@ class CouponServiceTest {
 
     @BeforeAll
     static void beforeAll() {
-        CouponPolicy couponPolicy = new CouponPolicy(
+        CouponPolicy couponPolicy = new LegacyCouponPolicy(
             1L, CouponPolicyType.FIXED, null, LocalDateTime.MIN, LocalDateTime.MAX
         );
         TEST_COUPON = new Coupon(1L, couponPolicy, "test", 10.0f);

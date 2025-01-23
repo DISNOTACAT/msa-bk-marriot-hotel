@@ -1,5 +1,6 @@
 package com.bkmarriott.coupon.domain;
 
+import com.bkmarriott.coupon.domain.couponpolicy.CouponPolicy;
 import java.time.LocalDateTime;
 import lombok.Getter;
 
@@ -19,6 +20,6 @@ public class Coupon {
     }
 
     public LocalDateTime calcCouponExpireTime(LocalDateTime baseTime) {
-        return couponPolicy.calcExpireTime(baseTime);
+        return couponPolicy.calculateExpireDateTime(baseTime);
     }
 }

@@ -1,13 +1,12 @@
 package com.bkmarriott.coupon.persistence.adapter;
 
 import com.bkmarriott.coupon.domain.Coupon;
-import com.bkmarriott.coupon.domain.CouponPolicy;
 import com.bkmarriott.coupon.domain.UserCoupon;
-import com.bkmarriott.coupon.domain.vo.CouponPolicyType;
 import com.bkmarriott.coupon.infrastructure.persistence.adapter.UserCouponCommandPersistenceAdapter;
 import com.bkmarriott.coupon.infrastructure.persistence.adapter.UserCouponQueryAdapter;
 import com.bkmarriott.coupon.infrastructure.persistence.entity.CouponEntity;
 import com.bkmarriott.coupon.infrastructure.persistence.entity.CouponPolicyEntity;
+import com.bkmarriott.coupon.infrastructure.persistence.entity.CouponPolicyEntityType;
 import com.bkmarriott.coupon.infrastructure.persistence.exception.UserCouponNotFoundException;
 import com.bkmarriott.coupon.infrastructure.persistence.repository.CouponPolicyRepository;
 import com.bkmarriott.coupon.infrastructure.persistence.repository.CouponRepository;
@@ -16,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +36,12 @@ class UserCouponAdapterTest {
     @Autowired
     private CouponRepository couponRepository;
 
+    @BeforeEach
+    void setUp() {
+        couponRepository.deleteAll();
+        couponPolicyRepository.deleteAll();
+    }
+  
     private final Long testUserId = 1234L;
 
     @Test
@@ -83,28 +89,20 @@ class UserCouponAdapterTest {
     }
 
     private Coupon generateTestCoupon() {
-        Coupon coupon = new Coupon(
-                null,
-                generateTestCouponPolicyFixedType(),
-                "Test Coupon",
-                0.1f
-        );
+        CouponEntity couponEntity = new CouponEntity(null, generateTestCouponPolicyFixedType(),
+            "test coupon", 10f);
 
-        CouponEntity couponEntity = couponRepository.save(CouponEntity.from(coupon));
+        couponEntity = couponRepository.save(couponEntity);
         return couponEntity.toDomain();
     }
 
-    private CouponPolicy generateTestCouponPolicyFixedType() {
-        CouponPolicy couponPolicy = new CouponPolicy(
-                null,
-                CouponPolicyType.FIXED,
-                null,
-                LocalDateTime.of(2025, 1, 3, 0, 0, 0),
-                LocalDateTime.of(2025, 1, 31, 0, 0, 0)
-                );
+    private CouponPolicyEntity generateTestCouponPolicyFixedType() {
+        CouponPolicyEntity couponPolicyEntity = new CouponPolicyEntity(null,
+            CouponPolicyEntityType.FIXED, null,
+            LocalDateTime.of(2025, 1, 3, 0, 0, 0),
+            LocalDateTime.of(2025, 1, 31, 0, 0, 0));
 
-        CouponPolicyEntity couponPolicyEntity = couponPolicyRepository.save(CouponPolicyEntity.from(couponPolicy));
-        return couponPolicyEntity.toDomain();
+        return couponPolicyRepository.save(couponPolicyEntity);
     }
 
     @Test

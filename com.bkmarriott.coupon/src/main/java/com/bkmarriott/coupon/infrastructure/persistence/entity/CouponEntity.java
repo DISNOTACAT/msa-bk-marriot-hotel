@@ -23,7 +23,7 @@ public class CouponEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "coupon_policy_id", nullable = false)
     private CouponPolicyEntity couponPolicy;
 
@@ -47,11 +47,10 @@ public class CouponEntity extends BaseEntity {
 
     public static CouponEntity from(Coupon coupon) {
         return new CouponEntity(
-                coupon.getId(),
-                CouponPolicyEntity.from(coupon.getCouponPolicy()),
-                coupon.getName(),
-                coupon.getDiscountRate()
+            coupon.getId(),
+            CouponPolicyEntity.generateWithId(coupon.getCouponPolicy().getId()),
+            coupon.getName(),
+            coupon.getDiscountRate()
         );
     }
-
 }

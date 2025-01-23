@@ -6,7 +6,8 @@ import static org.mockito.Mockito.when;
 import com.bkmarriott.coupon.application.outputport.UserCouponOutputPort;
 import com.bkmarriott.coupon.domain.Coupon;
 import com.bkmarriott.coupon.domain.UserCoupon;
-import com.bkmarriott.coupon.domain.CouponPolicy;
+import com.bkmarriott.coupon.domain.couponpolicy.CouponPolicy;
+import com.bkmarriott.coupon.domain.couponpolicy.LegacyCouponPolicy;
 import com.bkmarriott.coupon.domain.vo.CouponPolicyType;
 import com.bkmarriott.coupon.domain.vo.UserCouponForIssue;
 import com.bkmarriott.coupon.infrastructure.persistence.exception.CouponNotSpentException;
@@ -39,7 +40,7 @@ public class UserCouponServiceTest {
 
     @BeforeAll
     static void beforeAll() {
-        CouponPolicy couponPolicy = new CouponPolicy(
+        CouponPolicy couponPolicy = new LegacyCouponPolicy(
             1L, CouponPolicyType.FIXED, null, LocalDateTime.MIN, LocalDateTime.MAX
         );
         TEST_COUPON = new Coupon(1L, couponPolicy, "test", 10.0f);

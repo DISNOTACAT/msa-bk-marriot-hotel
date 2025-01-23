@@ -2,6 +2,8 @@ package com.bkmarriott.coupon.domain;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.bkmarriott.coupon.domain.couponpolicy.CouponPolicy;
+import com.bkmarriott.coupon.domain.couponpolicy.LegacyCouponPolicy;
 import com.bkmarriott.coupon.domain.vo.CouponPolicyType;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.Assertions;
@@ -16,7 +18,7 @@ class CouponTest {
     void calcCouponExpireTime_successTest() {
         // Given
         LocalDateTime endedAt = LocalDateTime.MAX;
-        CouponPolicy couponPolicy = new CouponPolicy(
+        CouponPolicy couponPolicy = new LegacyCouponPolicy(
             1L, CouponPolicyType.FIXED, null, LocalDateTime.MIN, endedAt
         );
         Coupon coupon = new Coupon(1L, couponPolicy, "test", 10.0f);

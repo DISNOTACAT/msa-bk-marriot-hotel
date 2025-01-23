@@ -1,6 +1,8 @@
 package com.bkmarriott.coupon.infrastructure.persistence.entity;
 
-import com.bkmarriott.coupon.domain.CouponPolicy;
+import com.bkmarriott.coupon.domain.couponpolicy.CouponPolicy;
+import com.bkmarriott.coupon.domain.couponpolicy.CouponPolicyFactory;
+import com.bkmarriott.coupon.domain.couponpolicy.LegacyCouponPolicy;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -12,7 +14,9 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
+@ToString
 @Getter
 @NoArgsConstructor
 @Table(name = "m_coupon_policy")
@@ -43,11 +47,17 @@ public class CouponPolicyEntity extends BaseEntity {
         this.endedAt = endedAt;
     }
 
-    public CouponPolicy toDomain() {
-        return new CouponPolicy(id, type.toDomain(), afterDay, startedAt, endedAt);
+    public CouponPolicyEntity(Long id) {
+        this.id = id;
     }
 
-    public static CouponPolicyEntity from(CouponPolicy couponPolicy) {
+    public CouponPolicy toDomain() {
+        return CouponPolicyFactory.generateCouponPolicy(
+            type.toDomain(), id, afterDay, startedAt, endedAt
+        );
+    }
+
+    public static CouponPolicyEntity from(LegacyCouponPolicy couponPolicy) {
         return new CouponPolicyEntity(
                 couponPolicy.getId(),
                 CouponPolicyEntityType.valueOf(couponPolicy.getType().name()),
@@ -55,5 +65,9 @@ public class CouponPolicyEntity extends BaseEntity {
                 couponPolicy.getStartedAt(),
                 couponPolicy.getEndedAt()
         );
+    }
+
+    public static CouponPolicyEntity generateWithId(Long id) {
+        return new CouponPolicyEntity(id);
     }
 }
