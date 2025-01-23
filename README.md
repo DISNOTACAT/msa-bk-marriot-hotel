@@ -49,7 +49,6 @@
 <img src="https://img.shields.io/badge/SpringGateway-6DB33F?style=flat-square&logo=spring&logoColor=white"/>
 <img src="https://img.shields.io/badge/Kafka-231F20?style=flat-square&logo=apachekafka&logoColor=white"/>
 <img src="https://img.shields.io/badge/Resilience4j-000000?style=flat-square&logo=&logoColor=white"/>
-<img src="https://img.shields.io/badge/Slack api-4A154B?style=flat-square&logo=slack&logoColor=white"/>
 </p>
 
 **Test**
@@ -83,7 +82,7 @@
 <br/><br/>
 
 ## 🌐 아키텍처 설계도
-<img width="1518" alt="image" src="https://github.com/user-attachments/assets/9cc4165a-d8a9-4d52-b52e-8d596926b745" />
+<img width="1518" alt="image" src="https://github.com/user-attachments/assets/adb32952-8bcb-4677-9a54-a30b57d2eead" />
 
 <br/>
 
@@ -135,12 +134,13 @@
 
 ## ⚙️ 기술적 의사 결정
 
-### [🚀 DDD와 애플리케이션 아키텍처 설계](https://www.notion.so/teamsparta/DDD-164ff65aa200432ab8f8d011876a500a?pvs=4) <br />
-### [🚀 Jacoco와 SonarQube 적용](https://www.notion.so/teamsparta/JaCoCo-SonarQube-13d0075e532d42c3a49d6d775ecf9d6d?pvs=4) <br />
-### [🚀 선착순 쿠폰 발급 동시성 처리 방법](https://www.notion.so/teamsparta/db834834d52f4e699eaef609b8fd0867?pvs=4) <br />
-### [🚀 호텔 예약 동시성 처리 방법](https://www.notion.so/teamsparta/f6ee0b4da13d442481930c4428cd4958?pvs=4) <br />
-### [🚀 Redis 원자성 보장하기](https://www.notion.so/teamsparta/Redis-300cd87664d84bc5b5df8d6d069a6cb7?pvs=4) <br />
-### [🚀 Spring Batch를 활용한 Redis & DB 동기화](https://www.notion.so/teamsparta/Spring-Batch-Redis-DB-5bb6f7f16218461280e506774dd2a12d?pvs=4) <br />
+### [✨ DDD와 애플리케이션 아키텍처 설계](https://www.notion.so/teamsparta/DDD-164ff65aa200432ab8f8d011876a500a?pvs=4) <br />
+### [✨ Jacoco와 SonarQube 적용](https://www.notion.so/teamsparta/JaCoCo-SonarQube-13d0075e532d42c3a49d6d775ecf9d6d?pvs=4) <br />
+### [✨ 선착순 쿠폰 발급 동시성 처리 방법](https://www.notion.so/teamsparta/db834834d52f4e699eaef609b8fd0867?pvs=4) <br />
+### [✨ 호텔 예약 동시성 처리 방법](https://www.notion.so/teamsparta/f6ee0b4da13d442481930c4428cd4958?pvs=4) <br />
+### [✨ Redis 원자성 보장하기](https://www.notion.so/teamsparta/Redis-300cd87664d84bc5b5df8d6d069a6cb7?pvs=4) <br />
+### [✨ Spring Batch를 활용한 Redis & DB 동기화](https://www.notion.so/teamsparta/Spring-Batch-Redis-DB-5bb6f7f16218461280e506774dd2a12d?pvs=4) <br />
+### [✨ Prometheus와 Grafana를 이용한 실시간 모니터링](https://www.notion.so/teamsparta/Prometheus-Grafana-1832dc3ef514816fb395faa1fbc04a3d?pvs=4)
 
 <br/>
 
