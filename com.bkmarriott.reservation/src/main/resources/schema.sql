@@ -1,5 +1,6 @@
 DROP TABLE IF EXISTS M_RESERVATION;
 DROP TABLE IF EXISTS M_ROOM_TYPE_INVENTORY;
+DROP TABLE IF EXISTS M_INVENTORY_HISTORY;
 
 CREATE TABLE M_RESERVATION
 (
@@ -37,4 +38,16 @@ CREATE TABLE M_ROOM_TYPE_INVENTORY
     DELETED_AT      DATETIME(6)                                  NULL,
     DELETED_BY      BIGINT                                       NULL,
     VERSION         INT                                          NOT NULL
+);
+
+CREATE TABLE M_INVENTORY_HISTORY
+(
+    ID              BIGINT AUTO_INCREMENT PRIMARY KEY,
+    DATE            DATETIME(6)                                  NOT NULL,
+    HOTEL_ID        BIGINT                                       NOT NULL,
+    ROOM_TYPE       ENUM ('DELUXE', 'STANDARD', 'SUITE', 'TWIN') NOT NULL,
+    ROOM_STOCK      BIGINT                                       NOT NULL,
+    SEQUENCE_NUMBER BIGINT                                       NOT NULL,
+    REDIS_ROOM_KEY  VARCHAR(255)                                 NOT NULL,
+    EVENT_TYPE      ENUM ('PREPARED', 'ROLLBACK')                NOT NULL
 );

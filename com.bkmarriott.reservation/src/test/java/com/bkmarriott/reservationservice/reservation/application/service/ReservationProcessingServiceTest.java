@@ -2,6 +2,7 @@ package com.bkmarriott.reservationservice.reservation.application.service;
 
 import com.bkmarriott.reservationservice.reservation.application.exception.PaymentException;
 import com.bkmarriott.reservationservice.reservation.application.exception.ReservationProcessingException;
+import com.bkmarriott.reservationservice.reservation.application.outputport.InventoryMessageSender;
 import com.bkmarriott.reservationservice.reservation.application.outputport.reservation.ReservationCommandOutputPort;
 import com.bkmarriott.reservationservice.reservation.application.outputport.cache.InventoryCacheOutputPort;
 import com.bkmarriott.reservationservice.reservation.application.outputport.feign.CouponOutputPort;
@@ -38,6 +39,7 @@ public class ReservationProcessingServiceTest {
     @Mock private CouponOutputPort couponOutputPort;
     @Mock private PaymentOutputPort paymentOutputPort;
     @Mock private InventoryCacheOutputPort inventoryCacheOutputPort;
+    @Mock private InventoryMessageSender inventoryMessageSender;
 
     PaymentForCreate paymentForCreate;
     ReservationForCreate reservationForCreate;
@@ -168,14 +170,14 @@ public class ReservationProcessingServiceTest {
         );
 
         Mockito.when(couponOutputPort.useCoupon(paymentForCreate.appliedCoupon())).thenReturn(mockCoupon);
-        Mockito.when(inventoryService.updateTotalReservedInventory(reservation.getReservationId())).thenReturn(inventoryList);
+//        Mockito.when(inventoryService.updateTotalReservedInventory(reservation.getReservationId())).thenReturn(inventoryList);
 
         // When
         reservationProcessingService.confirmReservation(reservation, mockPayment);
 
         // Then
         Mockito.verify(couponOutputPort).useCoupon(paymentForCreate.appliedCoupon()); // 쿠폰 사용이 호출됐는지 검증
-        Mockito.verify(inventoryService).updateTotalReservedInventory(reservation.getReservationId()); // 예약 객실 수가 증가했는지 검증
+//        Mockito.verify(inventoryService).updateTotalReservedInventory(reservation.getReservationId()); // 예약 객실 수가 증가했는지 검증
     }
 
     @Test
@@ -195,7 +197,7 @@ public class ReservationProcessingServiceTest {
         );
 
         Mockito.verify(paymentOutputPort).processRefund(mockPayment.paymentId(), reservation);
-        Mockito.verify(reservationCommandOutputPort).updateReservationStatus(reservationId, ReservationStatus.REFUNDED);
+        Mockito.verify(reservationCommandOutputPort).updateReservationStatus(reservationId, ReservationStatus.ABORT);
         Mockito.verify(inventoryCacheOutputPort, Mockito.times(1)).rollbackCount(InventoryQuery.fromReservation(reservation));
     }
 }

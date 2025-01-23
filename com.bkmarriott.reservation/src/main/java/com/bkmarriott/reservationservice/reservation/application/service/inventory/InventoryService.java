@@ -2,12 +2,13 @@ package com.bkmarriott.reservationservice.reservation.application.service.invent
 
 import com.bkmarriott.reservationservice.reservation.application.exception.InventoryUpdateFailureException;
 import com.bkmarriott.reservationservice.reservation.application.exception.ResourceNotFoundException;
+import com.bkmarriott.reservationservice.reservation.application.outputport.InventoryMessageSender;
 import com.bkmarriott.reservationservice.reservation.application.outputport.inventory.InventoryCommandOutputPort;
-import com.bkmarriott.reservationservice.reservation.application.outputport.inventory.InventoryQueryOutputPort;
 import com.bkmarriott.reservationservice.reservation.application.outputport.reservation.ReservationQueryOutputPort;
 import com.bkmarriott.reservationservice.reservation.application.outputport.cache.InventoryCacheOutputPort;
 import com.bkmarriott.reservationservice.reservation.domain.Inventory;
 import com.bkmarriott.reservationservice.reservation.domain.Reservation;
+import com.bkmarriott.reservationservice.reservation.domain.event.RoomInventoryEvent;
 import com.bkmarriott.reservationservice.reservation.domain.vo.InventoryQuery;
 
 import java.util.List;
@@ -21,9 +22,8 @@ import org.springframework.stereotype.Service;
 public class InventoryService {
 
   private final InventoryCommandOutputPort inventoryCommandOutputPort;
-  private final InventoryQueryOutputPort inventoryQueryOutputPort;
   private final InventoryCacheOutputPort inventoryCacheOutputPort;
-
+  private final InventoryMessageSender inventoryMessageSender;
   private final ReservationQueryOutputPort reservationQueryOutputPort;
 
 
@@ -55,13 +55,9 @@ public class InventoryService {
 
   public void prepareAvailableRoom(InventoryQuery query) {
     log.info("[InventoryService] [prepareAvailableRoom] hotelId ::: {}, startDate ::: {}, endDate ::: {}, roomType ::: {}", query.hotelId(), query.startDate(), query.endDate(), query.roomType() );
-    List<Inventory> inventoryFromReservation = inventoryQueryOutputPort.findInventoryFromReservation(query);
-    inventoryFromReservation.stream()
-            .mapToInt(Inventory::getAvailableRoomCount)
-            .min()
-            .orElseThrow(() -> new ResourceNotFoundException("해당 예약정보에 해당하는 객실 정보를 찾을 수 없습니다."));
 
-    inventoryCacheOutputPort.decreaseRoomCount(query);
-    // TODO DB 객실 선점 성공 히스토리 저장
+    List<RoomInventoryEvent.RoomStockInfo> roomStockInfoList = inventoryCacheOutputPort.decreaseRoomCount(query);
+
+    inventoryMessageSender.sendMessage(RoomInventoryEvent.prepare(roomStockInfoList));
   }
 }

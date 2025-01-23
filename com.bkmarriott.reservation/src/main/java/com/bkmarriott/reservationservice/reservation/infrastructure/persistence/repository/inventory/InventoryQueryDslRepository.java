@@ -50,7 +50,6 @@ public class InventoryQueryDslRepository {
                 .orderBy(
                         roomTypeInventoryEntity.totalInventory.subtract(roomTypeInventoryEntity.totalReserved).asc()
                 )
-                .setLockMode(LockModeType.OPTIMISTIC)
                 .fetch();
     }
 }

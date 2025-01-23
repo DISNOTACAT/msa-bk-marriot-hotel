@@ -2,17 +2,20 @@ package com.bkmarriott.reservationservice.reservation.application.service.reserv
 
 import com.bkmarriott.reservationservice.reservation.application.exception.PaymentException;
 import com.bkmarriott.reservationservice.reservation.application.exception.ReservationProcessingException;
+import com.bkmarriott.reservationservice.reservation.application.outputport.InventoryMessageSender;
 import com.bkmarriott.reservationservice.reservation.application.outputport.reservation.ReservationCommandOutputPort;
 import com.bkmarriott.reservationservice.reservation.application.outputport.cache.InventoryCacheOutputPort;
 import com.bkmarriott.reservationservice.reservation.application.outputport.feign.CouponOutputPort;
 import com.bkmarriott.reservationservice.reservation.application.outputport.feign.PaymentOutputPort;
 import com.bkmarriott.reservationservice.reservation.application.service.inventory.InventoryService;
 import com.bkmarriott.reservationservice.reservation.domain.Reservation;
+import com.bkmarriott.reservationservice.reservation.domain.event.RoomInventoryEvent;
 import com.bkmarriott.reservationservice.reservation.domain.vo.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -25,6 +28,7 @@ public class ReservationProcessingService {
     private final CouponOutputPort couponOutputPort;
     private final PaymentOutputPort paymentOutputPort;
     private final InventoryCacheOutputPort inventoryCacheOutputPort;
+    private final InventoryMessageSender inventoryMessageSender;
 
     public Reservation prepareReservation(ReservationForCreate reservationForCreate){
         log.debug("[ReservationProcessingService] [prepareReservation]");
@@ -49,10 +53,7 @@ public class ReservationProcessingService {
             return paymentOutputPort.processPayment(paymentForCreate, reservation); // FeignClient
         } catch (Exception e){
             log.error("[ReservationProcessingService] [processPayment] Error occurred {}: {}", reservation.getReservationId(), e.getMessage());
-            // 상태 수정
-            reservationCommandOutputPort.updateReservationStatus(reservation.getReservationId(), ReservationStatus.CANCELLED);
-            // Redis Count 수정
-            inventoryCacheOutputPort.rollbackCount(InventoryQuery.fromReservation(reservation));
+            rollbackReservation(reservation, ReservationStatus.CANCELLED);
             throw new PaymentException("결제가 진행되지 않았습니다.");
         }
     }
@@ -61,20 +62,23 @@ public class ReservationProcessingService {
         log.info("[ReservationProcessingService] [confirmReservation] reservationId ::: {}", reservation.getReservationId());
         try{
             // 1. Inventory 수정
-            inventoryService.updateTotalReservedInventory(reservation.getReservationId());
+//            inventoryService.updateTotalReservedInventory(reservation.getReservationId());
 
             // 2. 쿠폰 사용 처리
             Optional.ofNullable(payment.appliedCoupon()).ifPresent(couponOutputPort::useCoupon);
 
         }catch (Exception e){
             log.error("[ReservationProcessingService] [confirmReservation] Error occurred {}: {}", reservation.getReservationId(), e.getMessage());
-            // Redis Count 수정
-            inventoryCacheOutputPort.rollbackCount(InventoryQuery.fromReservation(reservation));
             // 환불 처리
             paymentOutputPort.processRefund(payment.paymentId(), reservation);
-            // 상태 변경
-            reservationCommandOutputPort.updateReservationStatus(reservation.getReservationId(), ReservationStatus.REFUNDED);
+            rollbackReservation(reservation, ReservationStatus.ABORT);
             throw new ReservationProcessingException("예약 확정 중 오류가 발생했습니다.");
         }
+    }
+
+    private void rollbackReservation(Reservation reservation, ReservationStatus updatedStatus){
+        List<RoomInventoryEvent.RoomStockInfo> roomStockInfoList = inventoryCacheOutputPort.rollbackCount(InventoryQuery.fromReservation(reservation));
+        inventoryMessageSender.sendMessage(RoomInventoryEvent.rollback(roomStockInfoList));
+        reservationCommandOutputPort.updateReservationStatus(reservation.getReservationId(), updatedStatus);
     }
 }

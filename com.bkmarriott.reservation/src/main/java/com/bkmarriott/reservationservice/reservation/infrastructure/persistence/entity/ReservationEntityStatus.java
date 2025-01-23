@@ -5,7 +5,7 @@ import java.util.Objects;
 
 public enum ReservationEntityStatus {
 
-  PENDING, PAID, REFUNDED, CANCELLED, REJECTED;
+  PENDING, PAID, REFUNDED, CANCELLED, ABORT;
 
   public ReservationStatus toDomain() {
     for(ReservationStatus status : ReservationStatus.values()) {
